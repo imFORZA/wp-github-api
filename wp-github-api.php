@@ -20,11 +20,136 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 if ( ! class_exists( 'GithubAPI' ) {
-	
+
 	/**
  	* Github API Class.
  	*/
 	class GithubAPI {
+
+		/**
+		 * api_url
+		 *
+		 * (default value: 'https://api.github.com/')
+		 *
+		 * @var string
+		 * @access private
+		 */
+		private $api_url = 'https://api.github.com/';
+
+
+		public function __construct(){
+
+		}
+
+		public function get_response() {
+
+		}
+
+		/* EVENTS. */
+
+		public function get_public_events() {
+
+		}
+
+		public function get_repo_events() {
+
+		}
+
+		public function get_repo_issue_events() {
+
+		}
+
+		public function get_network_events() {
+
+		}
+
+		public function get_organization_events() {
+
+		}
+
+		public function get_users_received_events() {
+
+		}
+
+		public function get_users_public_received_events() {
+
+		}
+
+		public function get_users_events() {
+
+		}
+
+		public function get_users_public_events() {
+
+		}
+
+		public function get_organization_events() {
+
+		}
+
+		public function get_notifications( $all, $participating, $since, $before ) {
+
+		}
+
+		public function get_repo_stargazers() {
+
+		}
+
+		public function get_users_starred( $username = '' ) {
+
+		}
+
+		/* GISTS. */
+
+		/* GIT DATA. */
+
+		/* INTEGRATIONS. */
+
+		/* ISSUES. */
+
+		/* MIGRATIONS. */
+
+		/* MISC. */
+
+		/* ORGANIZATIONS. */
+
+		/* PROJECTS. */
+
+		public function get_projects_cards( $column_id ) {
+
+		}
+
+		public function get_project_card( $card_id ) {
+
+		}
+
+		public function add_project_card( $column_id ) {
+
+		}
+
+		public function update_project_card( $card_id ) {
+
+		}
+
+		public function delete_project_card() {
+
+		}
+
+		public function move_project_card() {
+
+		}
+
+		/* PULL REQUESTS. */
+
+		/* REACTIONS. */
+
+		/* REPOSITORIES. */
+
+		/* SEARCH. */
+
+		/* USERS. */
+
+
 	} // End Class.
-	
+
 } // End Class Exists Check.
