@@ -1,6 +1,7 @@
 <?php
 /**
 * WP Github API
+* Designed to work with v3.0 (https://developer.github.com/v3) of the Github API.
 *
 * @package WP-Github-API
 */
@@ -103,7 +104,98 @@ if ( ! class_exists( 'GithubAPI' ) {
 
 		/* GIT DATA. */
 
+		// Blobs
+
+		public function get_blob( $owner, $repo, $sha ) {
+
+		}
+
+		public function create_blob( $owner, $repo ) {
+
+		}
+
+		public function get_blob_custom_media_types() {
+			return array(
+				'application/json',
+				'application/vnd.github.VERSION.raw'
+			);
+		}
+
+		// Commits
+
+		public function get_commit( $owner, $repo, $sha ) {
+
+		}
+
+		public function create_commit( $owner, $repo ) {
+
+		}
+
+		public function commit_signature_verification( $owner, $repo, $sha ) {
+
+		}
+
+		// References
+
+		public function get_reference() {
+
+		}
+
+		public function get_all_references() {
+
+		}
+
+		public function create_reference() {
+
+		}
+
+		public function update_reference() {
+
+		}
+
+		public function delete_reference() {
+
+		}
+
+		// Tags
+
+		public function get_tag() {
+
+		}
+
+		public function create_tag_object() {
+
+		}
+
+		public function tag_signature_verification() {
+
+		}
+
+		// Trees
+
+		public function get_tree( $owner, $repo, $sha ) {
+
+		}
+
+		public function get_tree_recursively( $owner, $repo, $sha ) {
+
+		}
+
+		public function create_tree( $owner, $repo ) {
+
+		}
+
+
+
 		/* INTEGRATIONS. */
+
+		public function find_installations() {
+
+		}
+
+		public function create_new_installation_token() {
+
+		}
 
 		/* ISSUES. */
 
