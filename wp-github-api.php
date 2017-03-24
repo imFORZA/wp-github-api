@@ -107,6 +107,49 @@ if ( ! class_exists( 'GithubAPI' ) {
 
 		/* ISSUES. */
 
+		public function list_issues() {
+
+		}
+
+		public function list_org_issues( $org ) {
+
+		}
+
+		public function list_issues_for_repo( $owner, $repo ) {
+
+		}
+
+		public function get_single_issue( $owner, $repo, $issue_number ) {
+
+		}
+
+		public function create_issue( $owner, $repo ) {
+
+		}
+
+		public function edit_issue( $owner, $repo, $issue_number ) {
+
+		}
+
+		public function lock_issue( $owner, $repo, $issue_number ) {
+
+		}
+
+		public function unlock_issue( $owner, $repo, $issue_number ) {
+
+		}
+
+		public function get_issues_custom_media_types() {
+
+			return array(
+				'application/vnd.github.VERSION.raw+json',
+				'application/vnd.github.VERSION.text+json',
+				'application/vnd.github.VERSION.html+json',
+				'application/vnd.github.VERSION.full+json'
+			)
+
+		}
+
 		/* MIGRATIONS. */
 
 		/* MISC. */
