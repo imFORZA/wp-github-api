@@ -248,6 +248,36 @@ if ( ! class_exists( 'GithubAPI' ) {
 
 		/* ORGANIZATIONS. */
 
+		public function get_your_orgs() {
+
+		}
+
+		public function get_all_orgs() {
+
+		}
+
+		public function get_user_orgs( $username ) {
+
+		}
+
+		public function get_org( $org ) {
+
+		}
+
+		public function edit_org() {
+
+		}
+
+		// Members
+
+		// Outside Collaborators
+
+		// Teams
+
+		// Webhooks
+
+		// Blocking Users (Organizations)
+
 		/* PROJECTS. */
 
 		public function get_projects_cards( $column_id ) {
