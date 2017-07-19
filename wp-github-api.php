@@ -65,7 +65,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 *
 			 * @param string $owner owner of the repo
 			 * @param string  $repo specific repo of public events
-			 * @return events repostitory events
+			 * @return Event repostitory events
 			 */
 		public function get_repo_events_list( $owner, $repo ) {}
 			/**
@@ -73,42 +73,42 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 *
 			 * @param  string $owner owner of the repo
 			 * @param  string $repo specific repo
-			 * @return events public events for a network of repositories
+			 * @return Event public events for a network of repositories
 			 */
 		public function get_public_network_repo_events_list( $owner, $repo ) {}
 			/**
 			 * Get_public_organization_events_list description
 			 *
 			 * @param  array $org organization
-			 * @return events public events for an organization
+			 * @return Event public events for an organization
 			 */
 		public function get_public_organization_events_list( $org ) {}
 			/**
 			 * Get_received_user_events_list description
 			 *
 			 * @param  string $username user of the repo
-			 * @return events events that are recieved by watching repos and following users
+			 * @return Event events that are recieved by watching repos and following users
 			 */
 		public function get_received_user_events_list( $username ) {}
 			/**
 			 * Get_public_received_user_events_list description
 			 *
 			 * @param  string $username user of the repo
-			 * @return events public events that a user recieved
+			 * @return Event public events that a user recieved
 			 */
 		public function get_public_received_user_events_list( $username ) {}
 			/**
 			 * Get_user_performed_events_list description
 			 *
 			 * @param  string $username user of the repo
-			 * @return events events performed by a user         [
+			 * @return Event events performed by a user         [
 			 */
 		public function get_user_performed_events_list( $username ) {}
 			/**
 			 * Get_publice_events_user_list description
 			 *
 			 * @param  string $username user of the repo
-			 * @return events public events performed by a user
+			 * @return Event public events performed by a user
 			 */
 		public function get_publice_events_user_list( $username ) {}
 			/**
@@ -116,7 +116,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 *
 			 * @param  string $username user of the repo
 			 * @param  array      $org organization
-			 * @return events user's organization dashboard. Must be authenticated as a user to view
+			 * @return Event user's organization dashboard. Must be authenticated as a user to view
 			 */
 		public function get_organization_events_list( $username, $org ) {}
 
