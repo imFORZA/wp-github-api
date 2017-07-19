@@ -119,7 +119,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 
 			// Events Types and Payloads
 			public function _event_commit_comment( $comment ) {}
-			public function _event( $ref_type, $ref, $master_branch, $description ) {}
+			public function post_event( $ref_type, $ref, $master_branch, $description ) {}
 			public function delete_event( $ref_type, $ref ) {}
 			public function deployment_event( $deployment, $sha, $payload, $enviroment, $description, $repository ) {}
 			public function deployment_event_stats( $deployment_status, $state, $tar_url, $deployment, $repository ) {}
@@ -157,62 +157,62 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			public function watch_event( $action ) {}
 
 			// Feeds
-			public function _feeds_list(){}
+			public function get_feeds_list(){}
 
 			// Notifications
-			public function _notifications_list(){}
-			public function _repo_notifications_list( $owner, $repo ) {}
-			public function _read(){}
-			public function _repo_notifications_read( $owner, $repo ) {}
-			public function _single_thread( $id ) {}
-			public function _thread_read( $id ) {}
-			public function _thread_subscription( $id ) {}
-			public function _thread_subscription( $id ) {}
+			public function get_notifications_list(){}
+			public function get_repo_notifications_list( $owner, $repo ) {}
+			public function put_read(){}
+			public function put_repo_notifications_read( $owner, $repo ) {}
+			public function get_single_thread( $id ) {}
+			public function patch_thread_read( $id ) {}
+			public function get_thread_subscription( $id ) {}
+			public function put_thread_subscription( $id ) {}
 			public function delete_thread_subscription( $id ) {}
 
 			// Starring
-			public function _stargazers_list( $owner, $repo ) {}
-			public function _starred_rep_list( $username ) {}
-			public function _star_repo_authentication( $owner, $repo ) {}
-			public function _repo_star( $owner, $repo ) {}
-			public function _repo_unstar( $owner, $repo ) {}
+			public function get_stargazers_list( $owner, $repo ) {}
+			public function get_starred_rep_list( $username ) {}
+			public function get_star_repo_authentication( $owner, $repo ) {}
+			public function put_repo_star( $owner, $repo ) {}
+			public function delete_repo_star( $owner, $repo ) {}
 
 			// Watching
-			public function _watchers_list( $owner, $repo ) {}
-			public function _repo_subscription( $owner, $repo ) {}
-			public function _repo_subscription( $owner, $repo ) {}
+			public function get_watchers_list( $owner, $repo ) {}
+			public function get_repo_subscription( $owner, $repo ) {}
+			public function put_repo_subscription( $owner, $repo ) {}
 			public function delete_repo_subscription( $owner, $repo ) {}
-			public function _legacy_repo_watch_authenticated( $owner, $repo ) {}
-			public function _repo_legacy_authenticated( $owner, $repo ) {}
+			public function get_legacy_repo_watch_authenticated( $owner, $repo ) {}
+			public function put_repo_legacy_authenticated( $owner, $repo ) {}
 			public function delete_repo_legacy( $owner, $repo ) {}
 
 			// GISTS
-			public function _user_gist_list( $username ) {}
-			public function _all_public_gist_list(){}
-			public function _starred_gist_list(){}
-			public function _single_gist( $id ) {}
-			public function _specific_revision_gist( $id, $sha ) {}
-			public function _gist(){}
-			public function _gist( $id ) {}
-			public function _gist_commits_list( $id ) {}
+			public function get_user_gist_list( $username ) {}
+			public function get_all_public_gist_list(){}
+			public function get_starred_gist_list(){}
+			public function get_single_gist( $id ) {}
+			public function get_specific_revision_gist( $id, $sha ) {}
+			public function post_gist(){}
+			public function patch_gist( $id ) {}
+			public function get_gist_commits_list( $id ) {}
 			public function put_star_gist( $id ) {}
 			public function delete_star_gist( $id ) {}
-			public function _star_gist( $id ) {}
-			public function _fork_gist( $id ) {}
-			public function _fork_gist_list( $id ) {}
+			public function get_star_gist( $id ) {}
+			public function post_fork_gist( $id ) {}
+			public function get_fork_gist_list( $id ) {}
 			public function delete_gist( $id ) {}
 
 			// Comments
-			public function _gist_comment_list( $gist_id ) {}
-			public function _single_comment( $gist_id, $id ) {}
-			public function _comment( $gist_id ) {}
-			public function _comment( $gist_id, $id ) {}
+			public function get_gist_comment_list( $gist_id ) {}
+			public function get_single_comment( $gist_id, $id ) {}
+			public function post_comment( $gist_id ) {}
+			public function patch_comment( $gist_id, $id ) {}
 			public function delete_comment( $gist_id, $id ) {}
 
 			// Blobs
-			public function _blob( $owner, $repo, $sha ) {}
-			public function _blob( $owner, $repo ) {}
-			public function _blob_custom_media_types() {
+			public function get_blob( $owner, $repo, $sha ) {}
+			public function post_blob( $owner, $repo ) {}
+			public function _blob_custom_media_types() { //not sure
 				return array(
 					'application/json',
 					'application/vnd.github.VERSION.raw',
@@ -220,251 +220,252 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			}
 
 			// Commits
-			public function _commit( $owner, $repo, $sha ) {}
-			public function _commit( $owner, $repo ) {}
-			public function commit_signature_verification( $owner, $repo, $sha ) {}
+			public function get_commit( $owner, $repo, $sha ) {}
+			public function post_commit( $owner, $repo ) {}
+			public function get_commit_signature_verification( $owner, $repo, $sha ) {}
 
 			// References
-			public function _reference( $owner, $repo, $ref = null ) {}
-			public function _all_references( $owner, $repo ) {}
-			public function _reference( $owner, $repo ) {}
-			public function _reference( $owner, $repo, $ref ) {}
+			public function get_reference( $owner, $repo, $ref = null ) {}
+			public function get_all_references( $owner, $repo ) {}
+			public function post_reference( $owner, $repo ) {}
+			public function patch_reference( $owner, $repo, $ref ) {}
 			public function delete_reference( $owner, $repo, $ref ) {}
 
 			// Tags
-			public function _tag( $owner, $repo, $sha ) {}
-			public function _tag_object( $owner, $repo ) {}
-			public function tag_signature_verification( $owner, $repo, $sha ) {}
+			public function get_tag( $owner, $repo, $sha ) {}
+			public function post_tag_object( $owner, $repo ) {}
+			public function tag_signature_verification( $owner, $repo, $sha ) {} //not sure
 
 			// Trees
-			public function _tree( $owner, $repo, $sha ) {}
-			public function _tree_recursively( $owner, $repo, $sha ) {}
-			public function _tree( $owner, $repo ) {}
+			public function get_tree( $owner, $repo, $sha ) {}
+			public function get_tree_recursively( $owner, $repo, $sha ) {}
+			public function post_tree( $owner, $repo ) {}
 
 			// Github Apps
-			public function _installations(){}
-			public function _single_installation( $installation_id ) {}
-			public function _user_installations_list(){}
-			public function _installation_token( $installation_id ) {}
+			public function get_installations(){}
+			public function get_single_installation( $installation_id ) {}
+			public function get_user_installations_list(){}
+			public function post_installation_token( $installation_id ) {}
 
 			// Installations
-			public function _repo_list(){}
-			public function _user_accessible_repo_installation_list( $installation_id ) {}
-			public function _installation_repo( $installation_id, $repository_id ) {}
+			public function get_repo_list(){}
+			public function get_user_accessible_repo_installation_list( $installation_id ) {}
+			public function put_installation_repo( $installation_id, $repository_id ) {}
 			public function delete_installation_repo( $installation_id, $repository_id ) {}
 
 			// Marketplace
-			public function _marketplace_all_plan_list(){}
-			public function _specific_plan_github_account_list( $id ) {}
-			public function _associated_marketplace_github_account( $id ) {}
-			public function _user_marketplace_purchases(){}
+			public function get_marketplace_all_plan_list(){}
+			public function get_specific_plan_github_account_list( $id ) {}
+			public function get_associated_marketplace_github_account( $id ) {}
+			public function get_user_marketplace_purchases(){}
 
 			// Github App Permissions
-			public function _repo_metadata_permission_collaborators( $repository_id ) {}
-			public function _access_token_install_metadata_permission( $installation_id ) {}
-			public function _repo_id_metadat_permission( $repository_id ) {}
-			public function _repo_metadata_permission_collaborator( $repository_id, $collab ) {}
-			public function _repo_metadata_permission_comments( $repository_id ) {}
-			public function _repo_metadata_permission_commit_commnets( $repository_id ) {}
-			public function _repo_metadata_permission_comment( $repository_id, $id ) {}
-			public function _repo_metadata_permission_commit( $repository_id ) {}
-			public function _repo_metadata_permission_commits( $repository_id ) {}
-			public function _repo_metadata_permission_contributor( $repository_id ) {}
-			public function _repo_metadata_permission_fork( $repository_id ) {}
-			public function _repo_metadata_permission_subscriber( $repository_id ) {}
-			public function _repo_metadata_permission_stargazer( $repository_id ) {}
-			public function _repo_metadata_permission_watcher( $repository_id ) {}
-			public function _repo_metadata_permission_license( $repository_id ) {}
-			public function _repo_metadata_permission_contributor_stats( $repository_id ) {}
-			public function _repo_metadata_permission_commit_activity_stats( $repository_id ) {}
-			public function _repo_metadata_permission_code_frequency_stats( $repository_id ) {}
-			public function _repo_metadata_permission_punch_card_stats( $repository_id ) {}
-			public function _repo_metadata_permission_participation_stats( $repository_id ) {}
-			public function _repo_metadata_permission_tags( $repository_id ) {}
-			public function _repo_metadata_permission_language( $repository_id ) {}
-			public function _metadata_permission_rate_limit(){}
-			public function _metadata_permission_hooks(){}
-			public function _metadata_permission_hook( $name ) {}
-			public function _metadata_permission_search_users(){}
-			public function _metadata_permission_search_code(){}
-			public function _matadata_permission_repo(){}
-			public function _metadata_permission_licenses( $license ) {}
-			public function _metadata_permission_user_org( $user_id ) {}
-			public function _metadata_permission_org(){}
-			public function _metadata_permission_users(){}
-			public function _metadata_permission_user( $user_id ) {}
-			public function _metadata_permission_user_keys( $user_id ) {}
-			public function _metadata_permission_user_recieved_events( $user_id ) {}
-			public function _metadata_permission_user_events( $user_id ) {}
-			public function _metadata_permission_events(){}
-			public function _metadata_permission_org_events( $organization_id ) {}
-			public function _metadata_permission_user_public_received_events( $user_id ) {}
-			public function _metadata_permission_user_public_events( $user_id ) {}
-			public function _metadata_permission_repo_comments_reactions( $owner, $repo, $id ) {}
-			public function _content_permission_repo_branches( $repository_id ) {}
-			public function _content_permission_repo_compare( $repository_id ) {}
-			public function _content_permission_repo_branch( $repository_id ) {}
-			public function _conten_permission_repo_branches( $repository_id ) {}
-			public function _content_permission_repo__merge( $repository_id, $id ) {}
-			public function _content_permission_repo_merges( $repository_id ) {}
-			public function _content_permission_repo_readme( $repository_id ) {}
-			public function _content_permission_repo_contents( $repository_id ) {}
-			public function _content_permission_repo_contents( $repository_id ) {}
+			public function get_repo_metadata_permission_collaborators( $repository_id ) {}
+			public function get_access_token_install_metadata_permission( $installation_id ) {}
+			public function post_repo_id_metadat_permission( $repository_id ) {}
+			public function get_repo_metadata_permission_collaborator( $repository_id, $collab ) {}
+			public function get_repo_metadata_permission_comments( $repository_id ) {}
+			public function get_repo_metadata_permission_commit_commnets( $repository_id ) {}
+			public function get_repo_metadata_permission_comment( $repository_id, $id ) {}
+			public function get_repo_metadata_permission_commit( $repository_id ) {}
+			public function get_repo_metadata_permission_commits( $repository_id ) {}
+			public function get_repo_metadata_permission_contributor( $repository_id ) {}
+			public function get_repo_metadata_permission_fork( $repository_id ) {}
+			public function get_repo_metadata_permission_subscriber( $repository_id ) {}
+			public function get_repo_metadata_permission_stargazer( $repository_id ) {}
+			public function get_repo_metadata_permission_watcher( $repository_id ) {}
+			public function get_repo_metadata_permission_license( $repository_id ) {}
+			public function get_repo_metadata_permission_contributor_stats( $repository_id ) {}
+			public function get_repo_metadata_permission_commit_activity_stats( $repository_id ) {}
+			public function get_repo_metadata_permission_code_frequency_stats( $repository_id ) {}
+			public function get_repo_metadata_permission_punch_card_stats( $repository_id ) {}
+			public function get_repo_metadata_permission_participation_stats( $repository_id ) {}
+			public function get_repo_metadata_permission_tags( $repository_id ) {}
+			public function get_repo_metadata_permission_language( $repository_id ) {}
+			public function get_metadata_permission_rate_limit(){}
+			public function get_metadata_permission_hooks(){}
+			public function get_metadata_permission_hook( $name ) {}
+			public function get_metadata_permission_search_users(){}
+			public function get_metadata_permission_search_code(){}
+			public function get_matadata_permission_repo(){}
+			public function get_metadata_permission_licenses( $license ) {}
+			public function get_metadata_permission_user_org( $user_id ) {}
+			public function get_metadata_permission_org(){}
+			public function get_metadata_permission_users(){}
+			public function get_metadata_permission_user( $user_id ) {}
+			public function get_metadata_permission_user_keys( $user_id ) {}
+			public function get_metadata_permission_user_recieved_events( $user_id ) {}
+			public function get_metadata_permission_user_events( $user_id ) {}
+			public function get_metadata_permission_events(){}
+			public function get_metadata_permission_org_events( $organization_id ) {}
+			public function get_metadata_permission_user_public_received_events( $user_id ) {}
+			public function get_metadata_permission_user_public_events( $user_id ) {}
+			public function get_metadata_permission_repo_comments_reactions( $owner, $repo, $id ) {}
+			public function get_content_permission_repo_branches( $repository_id ) {}
+			public function get_content_permission_repo_compare( $repository_id ) {}
+			public function get_content_permission_repo_branch( $repository_id ) {}
+			public function patch_conten_permission_repo_branches( $repository_id ) {}
+			public function put_content_permission_repo__merge( $repository_id, $id ) {}
+			public function post_content_permission_repo_merges( $repository_id ) {}
+			public function get_content_permission_repo_readme( $repository_id ) {}
+			public function get_content_permission_repo_contents( $repository_id ) {}
+			public function put_content_permission_repo_contents( $repository_id ) {}
 			public function delete_content_permission_repo_contents( $repository_id ) {}
-			public function _content_permission_repo_tarball( $repository_id ) {}
-			public function _content_permission_repo_zipball( $repository_id ) {}
-			public function _content_permission_repo_release( $repository_id ) {}
-			public function _content_permission_repo_release_latest( $repository_id ) {}
-			public function _content_permission_repo_release_tag( $repository_id ) {}
-			public function _content_permission_repo_release_id( $repository_id, $id ) {}
-			public function _content_permission_repo_release_ass( $repository_id, $id ) {}
-			public function _content_permission_repo_release_ass_id( $repository_id, $id ) {}
+			public function get_content_permission_repo_tarball( $repository_id ) {}
+			public function get_content_permission_repo_zipball( $repository_id ) {}
+			public function get_content_permission_repo_release( $repository_id ) {}
+			public function get_content_permission_repo_release_latest( $repository_id ) {}
+			public function get_content_permission_repo_release_tag( $repository_id ) {}
+			public function get_content_permission_repo_release_id( $repository_id, $id ) {}
+			public function get_content_permission_repo_release_ass( $repository_id, $id ) {}
+			public function get_content_permission_repo_release_ass_id( $repository_id, $id ) {}
 			public function delete_content_permission_repo_release_id( $repository_id, $id ) {}
-			public function _content_permission_repo_release_id( $repository_id, $id ) {}
-			public function _content_permission_repo_release_id( $repository_id, $id ) {}
-			public function _content_permisison_repo_release( $repository_id ) {}
-			public function _content_permission_repo_release_ass( $repository_id, $id ) {}
-			public function _content_permission_repo_release_ass( $repository_id, $id ) {}
-			public function delete_content_permission_repo_release_ass( $repository_id, $id ) {}
-			public function _content_permission_repo_commits_comments( $repository_id ) {}
-			public function _content_permission_repo_comments( $repository_id, $id ) {}
-			public function _content_permission_repo_comments( $repository_id, $id ) {}
-			public function _single_file_permission_repo_content( $owner, $repo, $path ) {}
-			public function _single_file_permission_repo_content( $owner, $repo, $path ) {}
-			public function _single_file_permission_repo_content( $owner, $repo, $path ) {}
-			public function _admin_permission_repo_teams( $repository_id ) {}
-			public function _admin_permission_repo_collaborator( $repository_id, $collab ) {}
+			public function patch_content_permission_repo_release_id( $repository_id, $id ) {}
+			public function post_content_permission_repo_release_id( $repository_id, $id ) {}
+			public function post_content_permisison_repo_release( $repository_id ) {}
+			public function patch_content_permission_repo_release_assets( $repository_id, $id ) {}
+			public function post_content_permission_repo_release_assets( $repository_id, $id ) {}
+			public function delete_content_permission_repo_release_assets( $repository_id, $id ) {}
+			public function post_content_permission_repo_commits_comments( $repository_id ) {}
+			public function patch_content_permission_repo_comments( $repository_id, $id ) {}
+			public function post_content_permission_repo_comments( $repository_id, $id ) {}
+			public function get_single_file_permission_repo_content( $owner, $repo, $path ) {}
+			public function put_single_file_permission_repo_content( $owner, $repo, $path ) {}
+			public function delete_single_file_permission_repo_content( $owner, $repo, $path ) {}
+			public function get_admin_permission_repo_teams( $repository_id ) {}
+			public function put_admin_permission_repo_collaborator( $repository_id, $collab ) {}
 			public function delete_admin_permission_repo_collaborator( $repository_id, $collab ) {}
-			public function _admin_permission_repo( $repository_id ) {}
+			public function patch_admin_permission_repo( $repository_id ) {}
 			public function delete_admin_permission_repo( $repository_id ) {}
-			public function _admin_permission_repo_branches_protection_required_status_checks( $repository_id, $branch ) {}
-			public function _admin_permission_repo_branches_protection_required_status_checks_contexts( $repository_id, $branch ) {}
-			public function _issue_permission_repo_issue_comment( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue( $repository_id ) {}
-			public function _issue_permission_repo_milestone( $repository_id ) {}
-			public function _issue_permission_repo_issue( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue( $repository_id ) {}
-			public function _issue_permission_repo_issues( $repository_id, $id ) {}
-			public function _issue_permission_search_issue(){}
-			public function _issue_permission_repo_issues( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue_events( $repository_id, $id ) {}
-			public function _issue_permission_repo_issues_event( $repository_id ) {}
-			public function _issue_permission_repo_issues_events( $repository_id, $id ) {}
-			public function _issue_permission_repo_assignee( $repository_id ) {}
-			public function _issue_permission_repo_assignees( $repository_id, $assignee ) {}
-			public function _issue_permission_repo_label( $repository_id ) {}
-			public function _issue_permission_repo_labels( $repository_id ) {}
-			public function _issue_permission_repo_issue_labels( $repository_id, $id ) {}
-			public function _issue_permission_repo_label( $repository_id ) {}
-			public function _issue_permission_repo_labels( $repository_id ) {}
-			public function _issue_permission_repo_labels( $repository_id ) {}
+			public function get_admin_permission_repo_branches_protection_required_status_checks( $repository_id, $branch ) {}
+			public function get_admin_permission_repo_branches_protection_required_status_checks_contexts( $repository_id, $branch ) {}
+			public function get_issue_permission_repo_issue_comment( $repository_id, $id ) {}
+			public function post_issue_permission_repo_issue( $repository_id ) {}
+			public function get_issue_permission_repo_milestone( $repository_id ) {}
+			public function post_issue_permission_repo_issue( $repository_id, $id ) {}
+			public function patch_issue_permission_repo_issue( $repository_id, $id ) {}
+			public function get_issue_permission_repo_issue( $repository_id ) {}
+			public function get_issue_permission_repo_issues( $repository_id, $id ) {}
+			public function get_issue_permission_search_issue(){}
+			public function post_issue_permission_repo_issues( $repository_id, $id ) {}
+			public function get_issue_permission_repo_issue_events( $repository_id, $id ) {}
+			public function get_issue_permission_repo_issues_event( $repository_id ) {}
+			public function get_issue_permission_repo_issues_events( $repository_id, $id ) {}
+			public function get_issue_permission_repo_assignee( $repository_id ) {}
+			public function get_issue_permission_repo_assignees( $repository_id, $assignee ) {}
+			public function get_issue_permission_repo_label( $repository_id ) {}
+			public function get_issue_permission_repo_labels( $repository_id ) {}
+			public function get_issue_permission_repo_issue_labels( $repository_id, $id ) {}
+			public function post_issue_permission_repo_label( $repository_id ) {}
+			public function patch_issue_permission_repo_labels( $repository_id ) {}
+			public function post_issue_permission_repo_labels( $repository_id ) {}
 			public function delete_issue_permission_repo_labels( $repository_id ) {}
-			public function _issue_permission_repo_issues_labels( $repository_id, $id ) {}
+			public function post_issue_permission_repo_issues_labels( $repository_id, $id ) {}
 			public function delete_issue_permission_repo_issues_labels( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue_labels( $repository_id, $id ) {}
+			public function put_issue_permission_repo_issue_labels( $repository_id, $id ) {}
 			public function delete_issue_permission_repo_issue_labels( $repository_id, $id ) {}
-			public function _issue_permission_repo_milestones( $repository_id ) {}
-			public function _issue_permission_repo_milestones_id( $repository_id, $id ) {}
-			public function _issue_permission_repo_milestones_labels( $repository_id, $id ) {}
-			public function _issue_permission_repo_milestone( $repository_id ) {}
-			public function _issue_permission_repo_milestones( $repository_id, $id ) {}
-			public function _issue_permission_repo_milestones( $repository_id, $id ) {}
+			public function get_issue_permission_repo_milestones( $repository_id ) {}
+			public function get_issue_permission_repo_milestones_id( $repository_id, $id ) {}
+			public function get_issue_permission_repo_milestones_labels( $repository_id, $id ) {}
+			public function post_issue_permission_repo_milestone( $repository_id ) {}
+			public function patch_issue_permission_repo_milestones( $repository_id, $id ) {}
+			public function post_issue_permission_repo_milestones( $repository_id, $id ) {}
 			public function delete_issue_permission_repo_milestones( $repository_id, $id ) {}
-			public function _issue_permission_issues_comments( $repository_id ) {}
-			public function _issue_permission_repo_issues_comments( $repository_id ) {}
-			public function _issue_permission_repo_issue_comments( $repository_id, $id ) {}
-			public function _issue_permision_repo_issue_comments( $repository_id, $id ) {}
-			public function _issue_permission_repo_issue_comments( $repository_id, $id ) {}
+			public function get_issue_permission_issues_comments( $repository_id ) {}
+			public function post_issue_permission_repo_issues_comments( $repository_id ) {}
+			public function get_issue_permission_repo_issue_comments( $repository_id, $id ) {}
+			public function patch_issue_permision_repo_issue_comments( $repository_id, $id ) {}
+			public function post_issue_permission_repo_issue_comments( $repository_id, $id ) {}
 			public function delete_issue_permission_repo_issue_comments( $repository_id, $id ) {}
-			public function _issue_permission_repo_issues_reactions( $owner, $repo, $number ) {}
-			public function _issue_permission_repo_issues_comments_reactions( $owner, $repo, $id ) {}
-			public function __request_permission_repo_( $repository_id ) {}
-			public function __request_permission_repo_s( $repository_id, $id ) {}
-			public function __request_permission_repo_s_files( $repository_id, $id ) {}
-			public function __request_permission_repo_issues_comments( $repository_id, $id ) {}
-			public function __request_permission_repo_milestones( $repository_id ) {}
-			public function __request_permission_repo_issues_comment( $repository_id, $id ) {}
-			public function __request_permission_repo__merge( $repository_id, $id ) {}
-			public function __request_permission_repo__commit( $repository_id, $id ) {}
-			public function __request_permission_repo__comment( $repository_id ) {}
-			public function __request_permission_repo__comment( $repository_id ) {}
-			public function __request_permission_repo__comments( $repository_id, $id ) {}
-			public function __request_permission_repo_s_comments( $repository_id, $id ) {}
-			public function __request_permission_repo__comments( $repository_id, $id ) {}
-			public function __request_permission_repo__comments( $repository_id, $id ) {}
-			public function __request_permission_repo__comment( $repository_id, $id ) {}
+			public function get_issue_permission_repo_issues_reactions( $owner, $repo, $number ) {}
+			public function get_issue_permission_repo_issues_comments_reactions( $owner, $repo, $id ) {}
+			public function get_request_permission_repo_( $repository_id ) {}
+			public function get_request_permission_repo_s( $repository_id, $id ) {}
+			public function get_request_permission_repo_s_files( $repository_id, $id ) {}
+			public function get_request_permission_repo_issues_comments( $repository_id, $id ) {}
+			public function get_request_permission_repo_milestones( $repository_id ) {}
+			public function post_request_permission_repo_issues_comment( $repository_id, $id ) {}
+			public function get_request_permission_repo__merge( $repository_id, $id ) {}
+			public function get_request_permission_repo__commit( $repository_id, $id ) {}
+			public function get_request_permission_repo__comment( $repository_id ) {}
+			public function post_request_permission_repo__comment( $repository_id ) {}
+			public function get_request_permission_repo__comments( $repository_id, $id ) {}
+			public function get_request_permission_repo_s_comments( $repository_id, $id ) {}
+			public function post_request_permission_repo__comments( $repository_id, $id ) {}
+			public function patch_request_permission_repo__comments( $repository_id, $id ) {}
+			public function post_request_permission_repo__comment( $repository_id, $id ) {}
 			public function delete__request_permission_repo__comments( $repository_id, $id ) {}
-			public function __request_permission_repo__reviews( $repository_id, $number ) {}
-			public function __request_permission_repo__reviews( $repository_id, $number ) {}
-			public function __request_permission_repo__review( $repository_id, $number, $id ) {}
-			public function __request_permission_repo__review_comments( $repository_id, $number, $id ) {}
-			public function __request_permission_repo_( $repository_id ) {}
-			public function __request_permission_repo_( $repository_id, $id ) {}
-			public function __request_permission_repo_issue_events( $repository_id, $id ) {}
-			public function __request_permission_repo_issues_event( $repository_id ) {}
-			public function __request_permission_repo_issues_events( $repository_id, $id ) {}
-			public function __request_permission_repo_assignee( $repository_id ) {}
-			public function __request_permission_repo_assignees( $repository_id, $assignee ) {}
-			public function __request_permission_repo_label( $repository_id ) {}
-			public function __request_permission_repo_labels( $repository_id ) {}
-			public function __request_permission_repo_issues_labels( $repository_id, $id ) {}
-			public function __request_permission_repo_label( $repository_id ) {}
-			public function __request_permission_repo_labels( $repository_id ) {}
-			public function __request_permission_repo_labels( $repository_id ) {}
+			public function get_request_permission_repo__reviews( $repository_id, $number ) {}
+			public function post_request_permission_repo__reviews( $repository_id, $number ) {}
+			public function get_request_permission_repo__review( $repository_id, $number, $id ) {}
+			public function get_request_permission_repo__review_comments( $repository_id, $number, $id ) {}
+			public function post_request_permission_repo_( $repository_id ) {}
+			public function patch_request_permission_repo_( $repository_id, $id ) {}
+			public function get_request_permission_repo_issue_events( $repository_id, $id ) {}
+			public function get_request_permission_repo_issues_event( $repository_id ) {}
+			public function get_request_permission_repo_issues_events( $repository_id, $id ) {}
+			public function get_request_permission_repo_assignee( $repository_id ) {}
+			public function get_request_permission_repo_assignees( $repository_id, $assignee ) {}
+			public function get_request_permission_repo_label( $repository_id ) {}
+			public function get_request_permission_repo_labels( $repository_id ) {}
+			public function get_request_permission_repo_issues_labels( $repository_id, $id ) {}
+			public function post_request_permission_repo_label( $repository_id ) {}
+			public function patch_request_permission_repo_labels( $repository_id ) {}
+			public function post_request_permission_repo_labels( $repository_id ) {}
 			public function delete__request_permission_repo_labels( $repository_id ) {}
-			public function __request_permission_repo_issues_lable( $repository_id, $id ) {}
+			public function post_request_permission_repo_issues_lable( $repository_id, $id ) {}
 			public function delete__request_permission_repo_issues_labels( $repository_id, $id ) {}
-			public function __request_permission_repo_issues_label( $repository_id, $id ) {}
+			public function put_request_permission_repo_issues_label( $repository_id, $id ) {}
 			public function delete__request_permission_repo_issues_label( $repository_id, $id ) {}
-			public function __request_permission_repo_milestone( $repository_id ) {}
-			public function __reuqest_permission_repo_milesstones( $repository_id, $id ) {}
-			public function __reuqest_permission_repo_milesstones_labels( $repository_id, $id ) {}
-			public function __reuqest_permission_repo_milesstones( $repository_id ) {}
-			public function __reuqest_permission_repo_milesstones( $repository_id, $id ) {}
-			public function __reuqest_permission_repo_milesstone( $repository_id, $id ) {}
+			public function get_request_permission_repo_milestone( $repository_id ) {}
+			public function get_reuqest_permission_repo_milesstones( $repository_id, $id ) {}
+			public function get_reuqest_permission_repo_milesstones_labels( $repository_id, $id ) {}
+			public function post_reuqest_permission_repo_milesstones( $repository_id ) {}
+			public function patch_reuqest_permission_repo_milesstones( $repository_id, $id ) {}
+			public function post_reuqest_permission_repo_milesstone( $repository_id, $id ) {}
 			public function delete__reuqest_permission_repo_milesstones( $repository_id, $id ) {}
-			public function __request_permission_repo_issue_comment( $repository_id ) {}
-			public function __request_permission_repo_issues_comments( $repository_id, $id ) {}
-			public function __request_permission_repo_issues_comments( $repository_id, $id ) {}
-			public function __request_permission_repo_issues_comments( $repository_id, $id ) {}
+			public function get_request_permission_repo_issue_comment( $repository_id ) {}
+			public function get_request_permission_repo_issues_comments( $repository_id, $id ) {}
+			public function patch_request_permission_repo_issues_comments( $repository_id, $id ) {}
+			public function post_request_permission_repo_issues_comments( $repository_id, $id ) {}
 			public function delete__request_permission_repo_issues_comments( $repository_id, $id ) {}
-			public function __request_permission_repo__comment_reactions( $owner, $repo, $id ) {}
-			public function _status_permission_repo_status( $repository_id, $sha ) {}
-			public function _status_permission_repo_statuses( $repository_id ) {}
-			public function _status_permission_repo_status( $repository_id ) {}
-			public function _deployment_permission_repo_deployment( $repository_id, $id ) {}
-			public function _deployment_permission_repo_deployments_statuses( $repository_id, $deployment_id ) {}
-			public function _deployment_permission_repo_deployments( $repository_id ) {}
-			public function _deployment_permission_repo_deployments_statusest( $repository_id, $deployment_id ) {}
-			public function _deployment_permission_repo_deployments( $repository_id ) {}
-			public function _pages_permission_repo_pages( $repository_id ) {}
-			public function _pages_permission_repo_pages_build( $repository_id ) {}
-			public function _pages_permission_repo_pages_builds_latest( $repository_id ) {}
-			public function _pages_permission_repo_pages_builds( $repository_id, $id ) {}
-			public function _pages_permission_repo_pages_builds( $repository_id ) {}
-			public function _org_members_permission_org_teams( $organization_id ) {}
-			public function _org_members_permission_teams( $id ) {}
-			public function _org_members_permission_teams_members( $id ) {}
-			public function _org_members_permission_teams_memberships( $id, $user ) {}
-			public function _org_members_permission_org_members( $organization_id ) {}
-			public function _org_members_permission_org_memberships( $organization_id, $user ) {}
-			public function _org_members_permission_org_memberships( $organization_id, $user ) {}
-			public function _repo_projects_permission_repo_projects( $owner, $repo ) {}
-			public function _repo_prjects_permission_projects( $id ) {}
-			public function _repo_projects_permission_repo_projects( $owner, $repo ) {}
-			public function _repo_projects_permission_projects( $id ) {}
+			public function gey_request_permission_repo__comment_reactions( $owner, $repo, $id ) {}
+			public function post_status_permission_repo_status( $repository_id, $sha ) {}
+			public function get_status_permission_repo_statuses( $repository_id ) {}
+			public function get_status_permission_repo_status( $repository_id ) {}
+			public function get_deployment_permission_repo_deployment( $repository_id, $id ) {}
+			public function post_deployment_permission_repo_deployments_statuses( $repository_id, $deployment_id ) {}
+			public function post_deployment_permission_repo_deployments( $repository_id ) {}
+			public function get_deployment_permission_repo_deployments_statusest( $repository_id, $deployment_id ) {}
+			public function get_deployment_permission_repo_deployments( $repository_id ) {}
+			public function get_pages_permission_repo_pages( $repository_id ) {}
+			public function get_pages_permission_repo_pages_build( $repository_id ) {}
+			public function get_pages_permission_repo_pages_builds_latest( $repository_id ) {}
+			public function get_pages_permission_repo_pages_builds( $repository_id, $id ) {}
+			public function post_pages_permission_repo_pages_builds( $repository_id ) {}
+			public function get_org_members_permission_org_teams( $organization_id ) {}
+			public function get_org_members_permission_teams( $id ) {}
+			public function get_org_members_permission_teams_members( $id ) {}
+			public function get_org_members_permission_teams_memberships( $id, $user ) {}
+      public function get_org_members_permissions_teams_repos($id) {}
+			public function get_org_members_permission_org_members( $organization_id ) {}
+			public function put_org_members_permission_org_memberships( $organization_id, $user ) {}
+			public function get_org_members_permission_org_memberships( $organization_id, $user ) {}
+			public function get_repo_projects_permission_repo_projects( $owner, $repo ) {}
+			public function get_repo_prjects_permission_projects( $id ) {}
+			public function post_repo_projects_permission_repo_projects( $owner, $repo ) {}
+			public function patch_repo_projects_permission_projects( $id ) {}
 			public function delete_repo_projects_permission_projects( $id ) {}
-			public function _org_projects_permission_orgs_projects( $org ) {}
-			public function _org_projects_permission_projects( $id ) {}
-			public function _org_projects_permission_orgs_projects( $org ) {}
-			public function _org_projects_permission_projects( $id ) {}
+			public function get_org_projects_permission_orgs_projects( $org ) {}
+			public function get_org_projects_permission_projects( $id ) {}
+			public function post_org_projects_permission_orgs_projects( $org ) {}
+			public function patch_org_projects_permission_projects( $id ) {}
 			public function delete_org_projects_permission_projects( $id ) {}
-			public function _org_members_permission_orgs_member( $org ) {}
-			public function _org_members_permission_orgs_members( $org, $username ) {}
+			public function get_org_members_permission_orgs_member( $org ) {}
+			public function get_org_members_permission_orgs_members( $org, $username ) {}
 			public function delete_org_members_permission_orgs_members( $org, $username ) {}
-			public function _org_members_permission_orgs_memberships( $org, $username ) {}
-			public function _org_members_permission_orgs_memberships( $org, $username ) {}
+			public function put_org_members_permission_orgs_memberships( $org, $username ) {}
+			public function get_org_members_permission_orgs_memberships( $org, $username ) {}
 			public function delete_org_members_permission_orgs_memberships( $org, $username ) {}
 
 			// Issues
@@ -673,14 +674,16 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			public function delete_project_column( $id ) {}
 			public function move_project_column( $id ) {}
 
-			//  Requests
-			public function __requests_list( $repo ) {}
-			public function _single__request( $owner, $repo, $number ) {}
-			public function __request( $owner, $repo, $number ) {}
-			public function __request_list_commits( $owner, $repo, $number ) {}
-			public function _merge__request( $owner, $repo, $number ) {}
-			public function __request( $owner, $repo, $number ) {}
-
+			//  Pull Requests
+			public function get_pull_requests( $owner, $repo) {}
+      public function get_single_pull_request( $owner, $repo, $number) {}
+      public function post_pull_request( $owner, $repo) {}
+      public function patch_pull_request( $owner, $repo, $number) {}
+      public function get_commits_on_pull_request( $owner, $repo, $number) {}
+      public function get_pull_requests_files( $owner, $repo, $number) {}
+      public function get_pull_request_if_merged( $owner, $repo, $number) {}
+      public function put_merge_pull_request( $owner, $repo, $number) {}
+      
 			// Reviews
 			public function __request_review_list( $owner, $repo, $number ) {}
 			public function _single_review( $owner, $repo, $number, $id ) {}
