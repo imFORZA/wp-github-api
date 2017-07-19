@@ -24,18 +24,35 @@ if ( ! class_exists( 'GithubAPI' ) {
 	 * Github API Class.
 	 */
 	class GithubAPI {
-				 /**
-				  * api_url
-				  *
-				  * (default value: 'https://api.github.com/')
-				  *
-				  * @var string
-				  * @access private
-				  */
+		/**
+		 * api_url
+		 *
+		 * (default value: 'https://api.github.com/')
+		 *
+		 * @var string
+		 * @access private
+		 */
 		private $api_url = 'https://api.github.com/';
 		public function __construct() {
 		}
 		public function get_response() {}
+
+		// OAuth Authorizations API
+		public function get_oauth_grants_list(){}
+		public function get_oauth_single_grant( $id ) {}
+		public function delete_oauth_grant( $id ) {}
+		public function get_oauth_authorizations_list(){}
+		public function get_oauth_single_authorization( $id ) {}
+		public function create_oauth_authorization(){}
+		public function get_create_oauth_authorization_specific_app( $client_id ) {}
+		public function get_create_oauth_authorization_specific_app_fingerprint( $client_id, $fingerprint ) {}
+		public function update_oauth_authorization( $id ) {}
+		public function delete_oauth_authorization( $id ) {}
+		public function get_oauth_authorization( $client_id, $access_token ) {}
+		public function set_oauth_authorization( $client_id, $access_token ) {}
+		public function delete_oauth_authorization_app( $client_id, $access_token ) {}
+		public function delete_oauth_grant_app( $client_id, $access_token ) {}
+
 		// Events
 		/**
 		 * Get_public_events_list description
