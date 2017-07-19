@@ -24,20 +24,20 @@ if ( ! class_exists( 'GithubAPI' ) {
 	 * Github API Class.
 	 */
 	class GithubAPI {
-		/**
-		 * api_url
-		 *
-		 * (default value: 'https://api.github.com/')
-		 *
-		 * @var string
-		 * @access private
-		 */
+				 /**
+				  * api_url
+				  *
+				  * (default value: 'https://api.github.com/')
+				  *
+				  * @var string
+				  * @access private
+				  */
 		private $api_url = 'https://api.github.com/';
 		public function __construct() {
 		}
 		public function get_response() {
 		}
-		// EVENTS.
+				   // EVENTS.
 		public function get_public_events_list() {}
 		public function get_repo_events_list( $owner, $repo ) {}
 		public function get_public_network_repo_events_list( $owner, $repo ) {}
@@ -47,6 +47,46 @@ if ( ! class_exists( 'GithubAPI' ) {
 		public function get_user_performed_events_list( $username ) {}
 		public function get_publice_events_user_list( $username ) {}
 		public function get_organization_events_list( $username, $org ) {}
+
+
+				// Events Types and Payloads
+		public function create_event_commit_comment( $comment ) {}
+		public function create_event( $ref_type, $ref, $master_branch, $description ) {}
+		public function delete_event( $ref_type, $ref ) {}
+		public function deployment_event( $deployment, $sha, $payload, $enviroment, $description, $repository ) {}
+		public function deployment_event_stats( $deployment_status, $state, $target_url, $deployment, $repository ) {}
+		public function download_event( $donwload ) {}
+		public function follow_event( $target ) {}
+		public function fork_event( $forkee ) {}
+		public function fork_event_apply( $head, $before, $after ) {}
+		public function create_gist_event( $action, $gist ) {}
+		public function create_gollum_event( $pages, $page_name, $title, $action, $sha, $html_url ) {}
+		public function install_event( $action, $installation ) {}
+		public function install_event_repo( $action, $installation, $repository_selection, $repositories_added, $repositories_removed ) {}
+		public function create_event_comment( $action, $changes, $changes, $issue, $comment ) {}
+		public function issues_event( $action, $issue, $changes, $changes, $chnages, $assignee, $label ) {}
+		public function label_event( $action, $label, $changes, $changes, $changes ) {}
+		public function marketplace_event_purchase( $action ) {}
+		public function member_event( $member, $action, $changes, $changes ) {}
+		public function membership_event( $action, $scope, $member, $team ) {}
+		public function milestone_event( $action, $milestone, $changes, $changes, $changes, $changes ) {}
+		public function org_event( $action, $invitation, $membership, $organization ) {}
+		public function org_block_event( $action, $blocked_user, $organization, $sender ) {}
+		public function page_build_event( $build ) {}
+		public function project_card_event( $action, $changes, $changes, $after_id, $project_card ) {}
+		public function project_column_event( $action, $changes, $changes, $after_id, $project_column ) {}
+		public function project_event( $action, $changes, $changes, $changes, $project ) {}
+		public function public_event(){}
+		public function pull_request_event( $action, $number, $changes, $changes, $changes, $pull_request ) {}
+		public function pull_request_review_event( $action, $pull_request, $review, $changes ) {}
+		public function pull_request_review_comment_event( $action, $changes, $changes, $pull_request, $comment ) {}
+		public function push_event( $ref, $head, $before, $size, $distinct_size, $commits, $commits, $commits, $commits, $commits, $commits, $commits, $commits ) {}
+		public function release_event( $action, $release ) {}
+		public function repo_event( $action, $repository ) {}
+		public function status_event( $sha, $state, $description, $target_url, $branches ) {}
+		public function team_event( $action, $team, $changes, $changes, $changes, $changes, $changes, $changes, $changes, $repository ) {}
+		public function team_add_event( $team, $repository ) {}
+		public function watch_event( $action ) {}
 
 		// Feeds
 		public function get_feeds_list(){}
