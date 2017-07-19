@@ -35,21 +35,76 @@ if ( ! class_exists( 'GithubAPI' ) {
 		private $api_url = 'https://api.github.com/';
 		public function __construct() {
 		}
-		public function get_response() {
-		}
-				   // EVENTS.
+		public function get_response() {}
+		// Events
+		/**
+		 * Get_public_events_list description
+		 *
+		 * @return events public events
+		 */
 		public function get_public_events_list() {}
+			/**
+			 * Get_repo_events_list description
+			 *
+			 * @param owner $owner owner of the repo
+			 * @param repo  $repo specific repo of public events
+			 * @return events repostitory events
+			 */
 		public function get_repo_events_list( $owner, $repo ) {}
+			/**
+			 * Get_public_network_repo_events_list description
+			 *
+			 * @param  owner $owner owner of the repo
+			 * @param  repo  $repo specific repo
+			 * @return events public events for a network of repositories
+			 */
 		public function get_public_network_repo_events_list( $owner, $repo ) {}
+			/**
+			 * Get_public_organization_events_list description
+			 *
+			 * @param  org $org organization
+			 * @return events public events for an organization
+			 */
 		public function get_public_organization_events_list( $org ) {}
+			/**
+			 * Get_received_user_events_list description
+			 *
+			 * @param  username $username user of the repo
+			 * @return events events that are recieved by watching repos and following users
+			 */
 		public function get_received_user_events_list( $username ) {}
+			/**
+			 * Get_public_received_user_events_list description
+			 *
+			 * @param  username $username user of the repo
+			 * @return events public events that a user recieved
+			 */
 		public function get_public_received_user_events_list( $username ) {}
+			/**
+			 * Get_user_performed_events_list description
+			 *
+			 * @param  username $username user of the repo
+			 * @return events events performed by a user         [
+			 */
 		public function get_user_performed_events_list( $username ) {}
+			/**
+			 * Get_publice_events_user_list description
+			 *
+			 * @param  username $username user of the repo
+			 * @return events public events performed by a user
+			 */
 		public function get_publice_events_user_list( $username ) {}
+			/**
+			 * Get_organization_events_list description
+			 *
+			 * @param  username $username user of the repo
+			 * @param  org      $org organization
+			 * @return events user's organization dashboard. Must be authenticated as a user to view
+			 */
 		public function get_organization_events_list( $username, $org ) {}
 
 
-				// Events Types and Payloads
+		// Events Types and Payloads
 		public function create_event_commit_comment( $comment ) {}
 		public function create_event( $ref_type, $ref, $master_branch, $description ) {}
 		public function delete_event( $ref_type, $ref ) {}
