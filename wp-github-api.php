@@ -36,20 +36,106 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function __construct() {
 		}
 		public function _response() {}
-		public function _response() {}
+			// OAuth Authorizations API
+			/**
+			 * Get_oauth_grants_list
+			 *
+			 * @return list
+			 */
 		public function get_oauth_grants_list(){}
+			/**
+			 * Get_oauth_single_grant
+			 *
+			 * @param  integar $id
+			 * @return list
+			 */
 		public function get_oauth_single_grant( $id ) {}
+			/**
+			 * Delete_oauth_grant
+			 *
+			 * @param  integar $id
+			 * @return grant
+			 */
 		public function delete_oauth_grant( $id ) {}
+			/**
+			 * Get_oauth_authorizations_list
+			 *
+			 * @return null
+			 */
 		public function get_oauth_authorizations_list(){}
+			/**
+			 * Get_oauth_single_authorization
+			 *
+			 * @param  integar $id
+			 * @return list
+			 */
 		public function get_oauth_single_authorization( $id ) {}
+			/**
+			 * Post_oauth_authorization
+			 *
+			 * @return authorization
+			 */
 		public function post_oauth_authorization(){}
+			/**
+			 * Put_create_oauth_authorization_specific_app
+			 *
+			 * @param  string $client_id
+			 * @return authorization
+			 */
 		public function put_create_oauth_authorization_specific_app( $client_id ) {}
+			/**
+			 * Put_create_oauth_authorization_specific_app_fingerprint
+			 *
+			 * @param  string $client_id
+			 * @param  string $fingerprint
+			 * @return authorization
+			 */
 		public function put_create_oauth_authorization_specific_app_fingerprint( $client_id, $fingerprint ) {}
+			/**
+			 * Patch_oauth_authorization
+			 *
+			 * @param  integar $id
+			 * @return authorization
+			 */
 		public function patch_oauth_authorization( $id ) {}
+			/**
+			 * Delete_oauth_authorization
+			 *
+			 * @param  int $id
+			 * @return null
+			 */
 		public function delete_oauth_authorization( $id ) {}
+			/**
+			 * Get_oauth_authorization
+			 *
+			 * @param  string $client_id
+			 * @param  string $access_token
+			 * @return authorization
+			 */
 		public function get_oauth_authorization( $client_id, $access_token ) {}
+			/**
+			 * Post_oauth_reset_authorization
+			 *
+			 * @param string       $client_id
+			 * @param  $access_token
+			 * @return authorization
+			 */
 		public function post_oauth_reset_authorization( $client_id, $access_token ) {}
+			/**
+			 * delete_oauth_authorization_app
+			 *
+			 * @param  string $client_id
+			 * @param  string $access_token
+			 * @return authorization
+			 */
 		public function delete_oauth_authorization_app( $client_id, $access_token ) {}
+			/**
+			 * Delete_oauth_grant_app
+			 *
+			 * @param  string $client_id
+			 * @param  string $access_token
+			 * @return grant
+			 */
 		public function delete_oauth_grant_app( $client_id, $access_token ) {}
 
 			// Events
