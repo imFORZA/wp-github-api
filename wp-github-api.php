@@ -46,14 +46,14 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			/**
 			 * Get_oauth_single_grant
 			 *
-			 * @param  integar $id
+			 * @param  integer $id
 			 * @return list
 			 */
 		public function get_oauth_single_grant( $id ) {}
 			/**
 			 * Delete_oauth_grant
 			 *
-			 * @param  integar $id
+			 * @param  integer $id identification number
 			 * @return grant
 			 */
 		public function delete_oauth_grant( $id ) {}
@@ -66,7 +66,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			/**
 			 * Get_oauth_single_authorization
 			 *
-			 * @param  integar $id
+			 * @param  integer $id identification number
 			 * @return list
 			 */
 		public function get_oauth_single_authorization( $id ) {}
@@ -79,61 +79,61 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			/**
 			 * Put_create_oauth_authorization_specific_app
 			 *
-			 * @param  string $client_id
+			 * @param  string $client_id client identification
 			 * @return authorization
 			 */
 		public function put_create_oauth_authorization_specific_app( $client_id ) {}
 			/**
 			 * Put_create_oauth_authorization_specific_app_fingerprint
 			 *
-			 * @param  string $client_id
-			 * @param  string $fingerprint
+			 * @param  string $client_id client identification
+			 * @param  string $fingerprint fingetprint
 			 * @return authorization
 			 */
 		public function put_create_oauth_authorization_specific_app_fingerprint( $client_id, $fingerprint ) {}
 			/**
 			 * Patch_oauth_authorization
 			 *
-			 * @param  integar $id
+			 * @param  integer $id identification number
 			 * @return authorization
 			 */
 		public function patch_oauth_authorization( $id ) {}
 			/**
 			 * Delete_oauth_authorization
 			 *
-			 * @param  int $id
+			 * @param  int $id identification
 			 * @return null
 			 */
 		public function delete_oauth_authorization( $id ) {}
 			/**
 			 * Get_oauth_authorization
 			 *
-			 * @param  string $client_id
-			 * @param  string $access_token
+			 * @param  string $client_id client identification
+			 * @param  string $access_token access token
 			 * @return authorization
 			 */
 		public function get_oauth_authorization( $client_id, $access_token ) {}
 			/**
 			 * Post_oauth_reset_authorization
 			 *
-			 * @param string       $client_id
-			 * @param  $access_token
+			 * @param string $client_id client identification
+			 * @param  string $access_token access token
 			 * @return authorization
 			 */
 		public function post_oauth_reset_authorization( $client_id, $access_token ) {}
 			/**
 			 * delete_oauth_authorization_app
 			 *
-			 * @param  string $client_id
-			 * @param  string $access_token
+			 * @param  string $client_id client identification
+			 * @param  string $access_token access token
 			 * @return authorization
 			 */
 		public function delete_oauth_authorization_app( $client_id, $access_token ) {}
 			/**
 			 * Delete_oauth_grant_app
 			 *
-			 * @param  string $client_id
-			 * @param  string $access_token
+			 * @param  string $client_id client identification
+			 * @param  string $access_token access token
 			 * @return grant
 			 */
 		public function delete_oauth_grant_app( $client_id, $access_token ) {}
@@ -206,13 +206,67 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_organization_events_list( $username, $org ) {}
 
 				// Events Types and Payloads
+			/**
+			 * _event_commit_comment description
+			 * @param   $comment
+			 * @return ?
+			 */
 		public function _event_commit_comment( $comment ) {}
+			/**
+			 * Post_event description
+			 * @param  string $ref_type      The object that was created. Can be one of "repository", "branch", or "tag"
+			 * @param  string $ref           The git ref (or null if only a repository was created).
+			 * @param  string $master_branch The name of the repository's default branch (usually master).
+			 * @param  string $description   The repository's current description.
+			 * @return
+			 */
 		public function post_event( $ref_type, $ref, $master_branch, $description ) {}
+			/**
+			 * Delete_event description
+			 * @param  string $ref_type The object that was deleted. Can be "branch" or "tag".
+			 * @param  string $ref      The full git ref.
+			 * @return
+			 */
 		public function delete_event( $ref_type, $ref ) {}
+			/**
+			 * Deployment_event description
+			 * @param  object $deployment  The deployment
+			 * @param  string $sha         The commit SHA for which this deployment was created.
+			 * @param  string $payload     The optional extra information for this deployment.
+			 * @param  string $enviroment  The optional environment to deploy to. Default: "production"
+			 * @param  string $description The optional human-readable description added to the deployment.
+			 * @param  object $repository  The repository for this deployment.
+			 * @return
+			 */
 		public function deployment_event( $deployment, $sha, $payload, $enviroment, $description, $repository ) {}
-		public function deployment_event_stats( $deployment_status, $state, $tar_url, $deployment, $repository ) {}
+			/**
+			 * Deployment_event_stats description
+			 * @param  object $deployment_status The deployment status.
+			 * @param  string $state             The new state. Can be pending, success, failure, or error.
+			 * @param  string $tar_url           The optional link added to the status.
+			 * @param  string $description       The optional human-readable description added to the status.
+			 * @param  object $deployment        The deployment that this status is associated with.
+			 * @param  object $repository        The repository for this deployment.
+			 * @return
+			 */
+		public function deployment_event_stats( $deployment_status, $state, $tar_url, $description, $deployment, $repository ) {}
+			/**
+			 * Download_event description
+			 * @param  object $donwload The download that was just created.
+			 * @return
+			 */
 		public function download_event( $donwload ) {}
+			/**
+			 * Follow_event description
+			 * @param  object $tar The user that was just followed.
+			 * @return
+			 */
 		public function follow_event( $tar ) {}
+			/**
+			 * [fork_event description
+			 * @param  [type] $forkee [description]
+			 * @return [type]         [description]
+			 */
 		public function fork_event( $forkee ) {}
 		public function fork_event_apply( $head, $before, $after ) {}
 		public function _gist_event( $action, $gist ) {}
@@ -245,45 +299,232 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function watch_event( $action ) {}
 
 				// Feeds
-		public function get_feeds_list(){}
+				 /**
+				  * Get_feeds_list description
+				  * @return
+				  */
+		public function get_feeds_list() {}
 
 				// Notifications
-		public function get_notifications_list(){}
-		public function get_repo_notifications_list( $owner, $repo ) {}
-		public function put_read(){}
-		public function put_repo_notifications_read( $owner, $repo ) {}
+			/**
+			 * Get_notifications_list description
+			 * @param  bool $all If true, show notifications marked as read. Default: false
+			 * @param  bool $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
+			 * @param  string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+			 * @param  string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+			 * @return
+			 */
+		public function get_notifications_list($all, $participating, $since, $before) {}
+			/**
+			 * [get_repo_notifications_list description]
+			 * @param  sruct $owner The owner
+			 * @param  struct $repo The repository
+			 * @param  bool $all If true, show notifications marked as read. Default: false
+			 * @param  bool $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
+			 * @param  string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+			 * @param  string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+			 * @return
+			 */
+		public function get_repo_notifications_list( $owner, $repo, $all, $participating, $since, $before ) {}
+			/**
+			 * Put_read description
+			 * @return
+			 */
+		public function put_read() {}
+			/**
+			 * [put_repo_notifications_read description]
+			 * @param  struct $owner owner
+			 * @param  struct $repo repostitory
+			 * @param  string $last_reat_at Describes the last point that notifications were checked. Anything updated since this time will not be updated. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+			 * @return
+			 */
+		public function put_repo_notifications_read( $owner, $repo, $last_reat_at ) {}
+			/**
+			 * Get_single_thread description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function get_single_thread( $id ) {}
+			/**
+			 * Patch_thread_read description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function patch_thread_read( $id ) {}
+			/**
+			 * Get_thread_subscription description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function get_thread_subscription( $id ) {}
+			/**
+			 * Put_thread_subscription description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function put_thread_subscription( $id ) {}
+			/**
+			 * Delete_thread_subscription description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function delete_thread_subscription( $id ) {}
 
 				// Starring
+	    /**
+	     * Get_stargazers_list description
+	     * @param  struct $owner owner
+	     * @param  struct $repo  repository
+	     * @return
+	     */
 		public function get_stargazers_list( $owner, $repo ) {}
+			/**
+			 * Get_starred_rep_list description
+			 * @param  string $username username
+			 * @return
+			 */
 		public function get_starred_rep_list( $username ) {}
+			/**
+			 * Get_star_repo_authentication description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function get_star_repo_authentication( $owner, $repo ) {}
+			/**
+			 * Put_repo_star description
+			 * @param  struct $owner owner
+ 			* @param  struct $repo  repository
+ 			* @return
+ 			*/
 		public function put_repo_star( $owner, $repo ) {}
+			/**
+			 * Delete_repo_star description
+			 * @param  struct $owner owner
+ 			* @param  struct $repo  repository
+ 			* @return
+ 			*/
 		public function delete_repo_star( $owner, $repo ) {}
 
 				// Watching
+		  /**
+		   * Get_watchers_list description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function get_watchers_list( $owner, $repo ) {}
+			/**
+			 * Get_repo_subscription description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function get_repo_subscription( $owner, $repo ) {}
+			/**
+			 * Put_repo_subscription description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function put_repo_subscription( $owner, $repo ) {}
+			/**
+			 * Delete_repo_subscription description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function delete_repo_subscription( $owner, $repo ) {}
+			/**
+			 * Get_legacy_repo_watch_authenticated description
+			 * @param  struct $owner owner
+ 			* @param  struct $repo  repository
+ 			* @return
+ 			*/
 		public function get_legacy_repo_watch_authenticated( $owner, $repo ) {}
+			/**
+			 * Put_repo_legacy_authenticated description
+			 * @param  struct $owner owner
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function put_repo_legacy_authenticated( $owner, $repo ) {}
+			/**
+			 * Delete_repo_legacy description
+			 * @param  struct $owner owner
+ 			* @param  struct $repo  repository
+ 			* @return
+ 			*/
 		public function delete_repo_legacy( $owner, $repo ) {}
 
 				// GISTS
-		public function get_user_gist_list( $username ) {}
-		public function get_all_public_gist_list(){}
-		public function get_starred_gist_list(){}
+		  /**
+		   * Get_user_gist_list description
+		   * @param  string $username username
+			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+			 * @return
+		   */
+		public function get_user_gist_list( $username, $since) {}
+			/**
+			 * Get_all_public_gist_list description
+			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+			 * @return
+			 */
+		public function get_all_public_gist_list( $since ){}
+			/**
+			 * Get_starred_gist_list description
+			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+			 * @return
+			 */
+		public function get_starred_gist_list( $since ){}
+			/**
+			 * Get_single_gist description
+			 * @param integer $id identification number
+			 * @return
+			 */
 		public function get_single_gist( $id ) {}
+			/**
+			 * Get_specific_revision_gist description
+			 * @param  integer $id  identification number
+			 * @param  string $sha The commit SHA for which this deployment was created.
+			 * @return
+			 */
 		public function get_specific_revision_gist( $id, $sha ) {}
-		public function post_gist(){}
-		public function patch_gist( $id ) {}
+			/**
+			 * Post_gist description
+			 * @param  object $files       Required. Files that make up this gist.
+			 * @param  string $description A description of the gist.
+			 * @param  boolean $public      Indicates whether the gist is public. Default: false
+			 * @return
+			 */
+		public function post_gist( $files, $description, $public ) {}
+			/**
+			 * Patch_gist description
+			 * @param  integer $id identification number
+			 * @param  string $description A description of the gist.
+			 * @param  object $files       Files that make up this gist.
+			 * @param  string $content     Updated file contents.
+			 * @param  string $filename    New name for this file.
+			 * @return
+			 */
+		public function patch_gist( $id, $description, $files, $content, $filename ) {}
+			/**
+			 * Get_gist_commits_list description
+			 * @param  integer $id identification number
+			 * @return
+			 */
 		public function get_gist_commits_list( $id ) {}
+			/**
+			 * Put_star_gist description
+			 * @param integer $id identification number
+			 * @return
+			 */
 		public function put_star_gist( $id ) {}
+			/**
+			 * Delete_star_gist description
+			 * @param integer $id identification number
+			 * @return
+			 */
 		public function delete_star_gist( $id ) {}
 		public function get_star_gist( $id ) {}
 		public function post_fork_gist( $id ) {}
