@@ -1,13 +1,13 @@
 <?php
 /**
- * WP Github API
+ * WP Github API Proper
  * Designed to work with v3.0 (https://developer.github.com/v3) of the Github API.
  *
  * @package WP-Github-API
  */
 
 /*
-* Plugin Name: WP Github API
+* Plugin Name: WP Github API Proper
 * Plugin URI: https://github.com/wp-api-libraries/wp-github-api
 * Description: Perform API requests to Github in WordPress.
 * Author: WP API Libraries
@@ -18,7 +18,8 @@
 */
 
 /* Exit if accessed directly */
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; }
 if ( ! class_exists( 'GithubAPI' ) ) {
 	/**
 	 * Github API Class.
@@ -33,8 +34,68 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @access private
 		 */
 		private $api_url = 'https://api.github.com/';
-		public function __construct() {
+
+
+		/**
+		 * API key
+		 *
+		 * @var string
+		 */
+		static private $api_key;
+		/**
+		 * Return format. XML or JSON.
+		 *
+		 * @var string
+		 */
+		static private $format;
+		/**
+		 * Indicate if json respone should be wrapped in a callback.
+		 *
+		 * @var int
+		 */
+		static private $callback;
+
+		protected $args = array();
+
+		/**
+		 * Constructor.
+		 *
+		 * @param string $api_key  API key to the account.
+		 * @param string $format   XML or JSON.
+		 * @param int    $callback If specified, returns json wrapped in a callback with the name passed in.
+		 */
+		public function __construct( $api_key = '', $format = 'json', $callback = null ) {
+
+					   static::$api_key = $api_key;
+					   static::$format  = $format;
+						static::$callback = $callback;
 		}
+
+		/**
+		 * Fetch the request from the API.
+		 *
+		 * @param  string $request Request URL.
+		 * @return mixed           Request results.
+		 */
+		private function fetch( $request ) {
+
+				 $this->args['body']['api_key'] = static::$api_key;
+				 $this->args['body']['format'] = static::$format;
+			if ( null !== static::$callback ) {
+				 $this->args['body']['callback'] = static::$callback;
+			}
+				  $response = wp_remote_post( $request, $this->args );
+				   $code = wp_remote_retrieve_response_code( $response );
+			if ( 200 !== $code ) {
+				return new WP_Error( 'response-error', sprintf( __( 'Server response code: %d', 'wp-uptime-robot-api' ), $code ) );
+			}
+				  $body = wp_remote_retrieve_body( $response );
+			if ( 'json' === static::$format && null === static::$callback ) {
+				return json_decode( $body );
+			}
+				  return $body;
+		}
+
 		public function _response() {}
 			// OAuth Authorizations API
 			/**
@@ -208,12 +269,14 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 				// Events Types and Payloads
 			/**
 			 * _event_commit_comment description
+			 *
 			 * @param   $comment
 			 * @return ?
 			 */
 		public function _event_commit_comment( $comment ) {}
 			/**
 			 * Post_event description
+			 *
 			 * @param  string $ref_type      The object that was created. Can be one of "repository", "branch", or "tag"
 			 * @param  string $ref           The git ref (or null if only a repository was created).
 			 * @param  string $master_branch The name of the repository's default branch (usually master).
@@ -223,6 +286,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function post_event( $ref_type, $ref, $master_branch, $description ) {}
 			/**
 			 * Delete_event description
+			 *
 			 * @param  string $ref_type The object that was deleted. Can be "branch" or "tag".
 			 * @param  string $ref      The full git ref.
 			 * @return
@@ -230,6 +294,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_event( $ref_type, $ref ) {}
 			/**
 			 * Deployment_event description
+			 *
 			 * @param  object $deployment  The deployment
 			 * @param  string $sha         The commit SHA for which this deployment was created.
 			 * @param  string $payload     The optional extra information for this deployment.
@@ -241,6 +306,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function deployment_event( $deployment, $sha, $payload, $enviroment, $description, $repository ) {}
 			/**
 			 * Deployment_event_stats description
+			 *
 			 * @param  object $deployment_status The deployment status.
 			 * @param  string $state             The new state. Can be pending, success, failure, or error.
 			 * @param  string $tar_url           The optional link added to the status.
@@ -252,18 +318,21 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function deployment_event_stats( $deployment_status, $state, $tar_url, $description, $deployment, $repository ) {}
 			/**
 			 * Download_event description
+			 *
 			 * @param  object $donwload The download that was just created.
 			 * @return
 			 */
 		public function download_event( $donwload ) {}
 			/**
 			 * Follow_event description
+			 *
 			 * @param  object $tar The user that was just followed.
 			 * @return
 			 */
 		public function follow_event( $tar ) {}
 			/**
 			 * [fork_event description
+			 *
 			 * @param  [type] $forkee [description]
 			 * @return [type]         [description]
 			 */
@@ -273,34 +342,35 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function _gollum_event( $pages, $page_name, $title, $action, $sha, $html_url ) {}
 		public function install_event( $action, $installation ) {}
 		public function install_event_repo( $action, $installation, $repository_selection, $repositories_ed, $repositories_removed ) {}
-		public function _event_comment( $action, $changes, $changes, $issue, $comment ) {}
-		public function issues_event( $action, $issue, $changes, $changes, $chnages, $assignee, $label ) {}
-		public function label_event( $action, $label, $changes, $changes, $changes ) {}
+		// public function _event_comment( $action, $changes, $changes, $issue, $comment ) {}
+		// public function issues_event( $action, $issue, $changes, $changes, $chnages, $assignee, $label ) {}
+		// public function label_event( $action, $label, $changes, $changes, $changes ) {}
 		public function marketplace_event_purchase( $action ) {}
-		public function member_event( $member, $action, $changes, $changes ) {}
+		// public function member_event( $member, $action, $changes, $changes ) {}
 		public function membership_event( $action, $scope, $member, $team ) {}
-		public function milestone_event( $action, $milestone, $changes, $changes, $changes, $changes ) {}
+		// public function milestone_event( $action, $milestone, $changes, $changes, $changes, $changes ) {}
 		public function org_event( $action, $invitation, $membership, $organization ) {}
 		public function org__event( $action, $ed_user, $organization, $sender ) {}
 		public function page_build_event( $build ) {}
-		public function project_card_event( $action, $changes, $changes, $after_id, $project_card ) {}
-		public function project_column_event( $action, $changes, $changes, $after_id, $project_column ) {}
-		public function project_event( $action, $changes, $changes, $changes, $project ) {}
+		// public function project_card_event( $action, $changes, $changes, $after_id, $project_card ) {}
+		// public function project_column_event( $action, $changes, $changes, $after_id, $project_column ) {}
+		// public function project_event( $action, $changes, $changes, $changes, $project ) {}
 		public function public_event(){}
-		public function _request_event( $action, $number, $changes, $changes, $changes, $_request ) {}
+		// public function _request_event( $action, $number, $changes, $changes, $changes, $_request ) {}
 		public function _request_review_event( $action, $_request, $review, $changes ) {}
-		public function _request_review_comment_event( $action, $changes, $changes, $_request, $comment ) {}
-		public function push_event( $ref, $head, $before, $size, $distinct_size, $commits, $commits, $commits, $commits, $commits, $commits, $commits, $commits ) {}
+		// public function _request_review_comment_event( $action, $changes, $changes, $_request, $comment ) {}
+		// public function push_event( $ref, $head, $before, $size, $distinct_size, $commits, $commits, $commits, $commits, $commits, $commits, $commits, $commits ) {}
 		public function release_event( $action, $release ) {}
 		public function repo_event( $action, $repository ) {}
 		public function status_event( $sha, $state, $description, $tar_url, $branches ) {}
-		public function team_event( $action, $team, $changes, $changes, $changes, $changes, $changes, $changes, $changes, $repository ) {}
+		// public function team_event( $action, $team, $changes, $changes, $changes, $changes, $changes, $changes, $changes, $repository ) {}
 		public function team__event( $team, $repository ) {}
 		public function watch_event( $action ) {}
 
 				// Feeds
 				 /**
 				  * Get_feeds_list description
+				  *
 				  * @return
 				  */
 		public function get_feeds_list() {}
@@ -308,19 +378,21 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 				// Notifications
 			/**
 			 * Get_notifications_list description
-			 * @param  bool $all If true, show notifications marked as read. Default: false
-			 * @param  bool $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
+			 *
+			 * @param  bool   $all If true, show notifications marked as read. Default: false
+			 * @param  bool   $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
 			 * @param  string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
 			 * @param  string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
 			 * @return
 			 */
-		public function get_notifications_list($all, $participating, $since, $before) {}
+		public function get_notifications_list( $all, $participating, $since, $before ) {}
 			/**
 			 * [get_repo_notifications_list description]
-			 * @param  sruct $owner The owner
+			 *
+			 * @param  sruct  $owner The owner
 			 * @param  struct $repo The repository
-			 * @param  bool $all If true, show notifications marked as read. Default: false
-			 * @param  bool $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
+			 * @param  bool   $all If true, show notifications marked as read. Default: false
+			 * @param  bool   $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
 			 * @param  string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
 			 * @param  string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
 			 * @return
@@ -328,11 +400,13 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_repo_notifications_list( $owner, $repo, $all, $participating, $since, $before ) {}
 			/**
 			 * Put_read description
+			 *
 			 * @return
 			 */
 		public function put_read() {}
 			/**
 			 * [put_repo_notifications_read description]
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo repostitory
 			 * @param  string $last_reat_at Describes the last point that notifications were checked. Anything updated since this time will not be updated. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
@@ -341,51 +415,59 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function put_repo_notifications_read( $owner, $repo, $last_reat_at ) {}
 			/**
 			 * Get_single_thread description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function get_single_thread( $id ) {}
 			/**
 			 * Patch_thread_read description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function patch_thread_read( $id ) {}
 			/**
 			 * Get_thread_subscription description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function get_thread_subscription( $id ) {}
 			/**
 			 * Put_thread_subscription description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function put_thread_subscription( $id ) {}
 			/**
 			 * Delete_thread_subscription description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function delete_thread_subscription( $id ) {}
 
 				// Starring
-	    /**
-	     * Get_stargazers_list description
-	     * @param  struct $owner owner
-	     * @param  struct $repo  repository
-	     * @return
-	     */
+		/**
+		 * Get_stargazers_list description
+		 *
+		 * @param  struct $owner owner
+		 * @param  struct $repo  repository
+		 * @return
+		 */
 		public function get_stargazers_list( $owner, $repo ) {}
 			/**
 			 * Get_starred_rep_list description
+			 *
 			 * @param  string $username username
 			 * @return
 			 */
 		public function get_starred_rep_list( $username ) {}
 			/**
 			 * Get_star_repo_authentication description
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo  repository
 			 * @return
@@ -393,29 +475,33 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_star_repo_authentication( $owner, $repo ) {}
 			/**
 			 * Put_repo_star description
+			 *
 			 * @param  struct $owner owner
- 			* @param  struct $repo  repository
- 			* @return
- 			*/
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function put_repo_star( $owner, $repo ) {}
 			/**
 			 * Delete_repo_star description
+			 *
 			 * @param  struct $owner owner
- 			* @param  struct $repo  repository
- 			* @return
- 			*/
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function delete_repo_star( $owner, $repo ) {}
 
 				// Watching
 		  /**
 		   * Get_watchers_list description
-			 * @param  struct $owner owner
-			 * @param  struct $repo  repository
-			 * @return
-			 */
+		   *
+		   * @param  struct $owner owner
+		   * @param  struct $repo  repository
+		   * @return
+		   */
 		public function get_watchers_list( $owner, $repo ) {}
 			/**
 			 * Get_repo_subscription description
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo  repository
 			 * @return
@@ -423,6 +509,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_repo_subscription( $owner, $repo ) {}
 			/**
 			 * Put_repo_subscription description
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo  repository
 			 * @return
@@ -430,6 +517,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function put_repo_subscription( $owner, $repo ) {}
 			/**
 			 * Delete_repo_subscription description
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo  repository
 			 * @return
@@ -437,13 +525,15 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_repo_subscription( $owner, $repo ) {}
 			/**
 			 * Get_legacy_repo_watch_authenticated description
+			 *
 			 * @param  struct $owner owner
- 			* @param  struct $repo  repository
- 			* @return
- 			*/
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function get_legacy_repo_watch_authenticated( $owner, $repo ) {}
 			/**
 			 * Put_repo_legacy_authenticated description
+			 *
 			 * @param  struct $owner owner
 			 * @param  struct $repo  repository
 			 * @return
@@ -451,77 +541,88 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function put_repo_legacy_authenticated( $owner, $repo ) {}
 			/**
 			 * Delete_repo_legacy description
+			 *
 			 * @param  struct $owner owner
- 			* @param  struct $repo  repository
- 			* @return
- 			*/
+			 * @param  struct $repo  repository
+			 * @return
+			 */
 		public function delete_repo_legacy( $owner, $repo ) {}
 
 				// GISTS
 		  /**
 		   * Get_user_gist_list description
+		   *
 		   * @param  string $username username
-			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
-			 * @return
+		   * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+		   * @return
 		   */
-		public function get_user_gist_list( $username, $since) {}
+		public function get_user_gist_list( $username, $since ) {}
 			/**
 			 * Get_all_public_gist_list description
+			 *
 			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
 			 * @return
 			 */
-		public function get_all_public_gist_list( $since ){}
+		public function get_all_public_gist_list( $since ) {}
 			/**
 			 * Get_starred_gist_list description
+			 *
 			 * @param  string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
 			 * @return
 			 */
-		public function get_starred_gist_list( $since ){}
+		public function get_starred_gist_list( $since ) {}
 			/**
 			 * Get_single_gist description
+			 *
 			 * @param integer $id identification number
 			 * @return
 			 */
 		public function get_single_gist( $id ) {}
 			/**
 			 * Get_specific_revision_gist description
+			 *
 			 * @param  integer $id  identification number
-			 * @param  string $sha The commit SHA for which this deployment was created.
+			 * @param  string  $sha The commit SHA for which this deployment was created.
 			 * @return
 			 */
 		public function get_specific_revision_gist( $id, $sha ) {}
 			/**
 			 * Post_gist description
-			 * @param  object $files       Required. Files that make up this gist.
-			 * @param  string $description A description of the gist.
+			 *
+			 * @param  object  $files       Required. Files that make up this gist.
+			 * @param  string  $description A description of the gist.
 			 * @param  boolean $public      Indicates whether the gist is public. Default: false
 			 * @return
 			 */
 		public function post_gist( $files, $description, $public ) {}
 			/**
 			 * Patch_gist description
+			 *
 			 * @param  integer $id identification number
-			 * @param  string $description A description of the gist.
-			 * @param  object $files       Files that make up this gist.
-			 * @param  string $content     Updated file contents.
-			 * @param  string $filename    New name for this file.
+			 * @param  string  $description A description of the gist.
+			 * @param  object  $files       Files that make up this gist.
+			 * @param  string  $content     Updated file contents.
+			 * @param  string  $filename    New name for this file.
 			 * @return
 			 */
 		public function patch_gist( $id, $description, $files, $content, $filename ) {}
 			/**
 			 * Get_gist_commits_list description
+			 *
 			 * @param  integer $id identification number
 			 * @return
 			 */
 		public function get_gist_commits_list( $id ) {}
 			/**
 			 * Put_star_gist description
+			 *
 			 * @param integer $id identification number
 			 * @return
 			 */
 		public function put_star_gist( $id ) {}
 			/**
 			 * Delete_star_gist description
+			 *
 			 * @param integer $id identification number
 			 * @return
 			 */
@@ -544,8 +645,8 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function _blob_custom_media_types() {
 			// not sure
 			return array(
-			'application/json',
-			'application/vnd.github.VERSION.raw',
+				'application/json',
+				'application/vnd.github.VERSION.raw',
 			);
 		}
 
@@ -672,7 +773,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_issue_permission_repo_issue_comment( $repository_id, $id ) {}
 		public function post_issue_permission_repo_issue( $repository_id ) {}
 		public function get_issue_permission_repo_milestone( $repository_id ) {}
-		public function post_issue_permission_repo_issue( $repository_id, $id ) {}
+		// public function post_issue_permission_repo_issue( $repository_id, $id ) {}
 		public function patch_issue_permission_repo_issue( $repository_id, $id ) {}
 		public function get_issue_permission_repo_issue( $repository_id ) {}
 		public function get_issue_permission_repo_issues( $repository_id, $id ) {}
@@ -723,7 +824,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_request_permission_repo_s_comments( $repository_id, $id ) {}
 		public function post_request_permission_repo__comments( $repository_id, $id ) {}
 		public function patch_request_permission_repo__comments( $repository_id, $id ) {}
-		public function post_request_permission_repo__comment( $repository_id, $id ) {}
+		// public function post_request_permission_repo__comment( $repository_id, $id ) {}
 		public function delete__request_permission_repo__comments( $repository_id, $id ) {}
 		public function get_request_permission_repo__reviews( $repository_id, $number ) {}
 		public function post_request_permission_repo__reviews( $repository_id, $number ) {}
@@ -755,7 +856,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function post_reuqest_permission_repo_milesstone( $repository_id, $id ) {}
 		public function delete__reuqest_permission_repo_milesstones( $repository_id, $id ) {}
 		public function get_request_permission_repo_issue_comment( $repository_id ) {}
-		public function get_request_permission_repo_issues_comments( $repository_id, $id ) {}
+		// public function get_request_permission_repo_issues_comments( $repository_id, $id ) {}
 		public function patch_request_permission_repo_issues_comments( $repository_id, $id ) {}
 		public function post_request_permission_repo_issues_comments( $repository_id, $id ) {}
 		public function delete__request_permission_repo_issues_comments( $repository_id, $id ) {}
@@ -808,10 +909,10 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_lock_issue_lock( $owner, $repo, $number ) {}
 		public function _issues_custom_media_types() {
 			return array(
-			'application/vnd.github.VERSION.raw+json',
-			'application/vnd.github.VERSION.text+json',
-			'application/vnd.github.VERSION.html+json',
-			'application/vnd.github.VERSION.full+json',
+				'application/vnd.github.VERSION.raw+json',
+				'application/vnd.github.VERSION.text+json',
+				'application/vnd.github.VERSION.html+json',
+				'application/vnd.github.VERSION.full+json',
 			);
 		}
 			// Assignees
@@ -837,7 +938,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			// Issue Labels
 		public function get_all_issue_repo_labels( $owner, $repo ) {}
 		public function get_single_issue_label( $owner, $repo, $name ) {}
-		public function post_issue_label( $owner, $owner ) {}
+		// public function post_issue_label( $owner, $owner ) {}
 		public function patch_issue_label( $owner, $repo, $name ) {}
 		public function delete_issue_label( $owner, $repo, $name ) {}
 		public function get_issue_label_issue_list( $owner, $repo, $number ) {}
@@ -1006,17 +1107,16 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_pending_review( $owner, $repo, $number, $id ) {}
 		public function get_single_review_comments( $owner, $repo, $number, $id ) {}
 		public function post_request_review( $owner, $repo, $number ) {}
-		public function post_request_review( $owner, $repo, $number, $id ) {}
+		// public function post_request_review( $owner, $repo, $number, $id ) {}
 		public function delete_request_review( $owner, $repo, $number, $id ) {}
 
 			// Review Comments
 		public function get_request_comments_list( $owner, $repo, $number ) {}
 		public function get_repo_comments_list( $owner, $repo ) {}
-		public function get_single_comment( $owner, $repo, $id ) {}
-		public function post_comment( $owner, $repo, $number ) {}
-		public function patch_comment( $owner, $repo, $id ) {}
-		public function delete_comment( $owner, $repo, $id ) {}
-
+		// public function get_single_comment( $owner, $repo, $id ) {}
+		// public function post_comment( $owner, $repo, $number ) {}
+		// public function patch_comment( $owner, $repo, $id ) {}
+		// public function delete_comment( $owner, $repo, $id ) {}
 			// Review Requests
 		public function get_review_requests_list( $owner, $repo, $number ) {}
 		public function post_review_request( $owner, $repo, $number ) {}
@@ -1033,9 +1133,33 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_request_review_comment_reaction( $owner, $repo, $id ) {}
 		public function delete_reaction( $id ) {}
 
-			// Repositories
-		public function get_your_repo_list(){}
-		public function get_user_repo_list( $username ) {}
+		// Repositories
+		// /**
+		// * Get_your_repo_list
+		// * @param  string $visibility
+		// * @param  string $affiliation
+		// * @param  string $type
+		// * @param  string $sort
+		// * @param  string $direction
+		// * @return mixed
+		// */
+		// public function get_your_repo_list($visibility = 'all', $affiliation = 'owner, collaborator, organization_member', $type = 'all', $sort = 'full_name', $direction = 'asc'){
+		  // }
+		/**
+		 * get_user_repo_list
+		 *
+		 * @param  string $username
+		 * @param  string $type
+		 * @param  string $sort
+		 * @param  string $direction
+		 * @return array/string
+		 */
+		public function get_user_repo_list( $username, $type = 'owner', $sort = 'full_name', $direction = 'asc' ) {
+
+			$request = $this->api_url . 'users/' . $username . '/repos';
+			error_log( print_r( $request, true ) );
+			return $this->fetch( $request );
+		}
 		public function get_org_repo_list( $org ) {}
 		public function get_all_public_repo_list(){}
 		public function post_repo( $org ) {}
@@ -1076,7 +1200,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_protected_branch_team_restrictions( $owner, $repo, $branch ) {}
 		public function get_protected_branch_user_restrictions_list( $owner, $repo, $branch ) {}
 		public function post_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
-		public function post_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
+		// public function post_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
 		public function delete_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
 
 			// Repo Collaborators
@@ -1108,7 +1232,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_repo_readme( $owner, $repo ) {}
 		public function get_repo_contents( $owner, $repo, $path ) {}
 		public function put_repo_file( $owner, $repo, $path ) {}
-		public function put_repo_file( $owner, $repo, $path ) {}
+		// public function put_repo_file( $owner, $repo, $path ) {}
 		public function delete_repo_file( $owner, $repo, $path ) {}
 		public function get_repo_archive_link( $owner, $repo, $archive_format, $ref ) {}
 
@@ -1141,9 +1265,8 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_repo_invite( $owner, $repo, $invitation_id ) {}
 		public function patch_repo_invite( $owner, $repo, $invitation_id ) {}
 		public function get_repo_user_invite_list(){}
-		public function patch_repo_invite( $invitation_id ) {}
-		public function delete_repo_invite( $invitation_id ) {}
-
+		// public function patch_repo_invite( $invitation_id ) {}
+		// public function delete_repo_invite( $invitation_id ) {}
 			// Repo Merging
 		public function post_repo_merge( $owner, $repo ) {}
 
@@ -1244,7 +1367,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_personal_public_key_list(){}
 		public function get_user_single_public_key( $id ) {}
 		public function post_user_public_key(){}
-		public function post_user_public_key(){}
+		// public function post_user_public_key(){}
 		public function delete_user_public_key( $id ) {}
 
 			// GPG Keys
@@ -1257,9 +1380,8 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			// User  Another User
 		public function get_user_block_user_list(){}
 		public function get_personal_user_block_user( $username ) {}
-		public function put_block_user( $username ) {}
-		public function delete_block_user( $username ) {}
-
+		// public function put_block_user( $username ) {}
+		// public function delete_block_user( $username ) {}
 			// Admin Stats Enterprise
 		public function get_enterprise_admin_stats( $type ) {}
 
