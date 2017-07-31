@@ -28,7 +28,7 @@ if ( ! class_exists( 'Test' ) ) {
 
 	 $client = new GithubAPI();
 
-	 error_log(print_r($client->get_user_repo_list('AppleMaster2000'),true));
+	 //error_log(print_r($client->get_user_repo_list('AppleMaster2000'),true));
 	class Test {
 
 	}

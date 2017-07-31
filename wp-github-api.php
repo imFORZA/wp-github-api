@@ -74,26 +74,18 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		/**
 		 * Fetch the request from the API.
 		 *
-		 * @param  string $request Request URL.
-		 * @return mixed           Request results.
+		 * @access private
+		 * @param mixed $request Request URL.
+		 * @return $body Body.
 		 */
 		private function fetch( $request ) {
-
-				 $this->args['body']['api_key'] = static::$api_key;
-				 $this->args['body']['format'] = static::$format;
-			if ( null !== static::$callback ) {
-				 $this->args['body']['callback'] = static::$callback;
-			}
-				  $response = wp_remote_post( $request, $this->args );
-				   $code = wp_remote_retrieve_response_code( $response );
+			$response = wp_remote_get( $request );
+			$code = wp_remote_retrieve_response_code( $response );
 			if ( 200 !== $code ) {
-				return new WP_Error( 'response-error', sprintf( __( 'Server response code: %d', 'wp-uptime-robot-api' ), $code ) );
+				return new WP_Error( 'response-error', sprintf( __( 'Server response code: %d', 'wp-opensrs-api' ), $code ) );
 			}
-				  $body = wp_remote_retrieve_body( $response );
-			if ( 'json' === static::$format && null === static::$callback ) {
-				return json_decode( $body );
-			}
-				  return $body;
+			$body = wp_remote_retrieve_body( $response );
+			return json_decode( $body );
 		}
 
 		public function _response() {}
@@ -1134,17 +1126,18 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function delete_reaction( $id ) {}
 
 		// Repositories
-		// /**
-		// * Get_your_repo_list
-		// * @param  string $visibility
-		// * @param  string $affiliation
-		// * @param  string $type
-		// * @param  string $sort
-		// * @param  string $direction
-		// * @return mixed
-		// */
-		// public function get_your_repo_list($visibility = 'all', $affiliation = 'owner, collaborator, organization_member', $type = 'all', $sort = 'full_name', $direction = 'asc'){
-		  // }
+		/**
+		 * Get_your_repo_list
+		 *
+		 * @param  string $visibility
+		 * @param  string $affiliation
+		 * @param  string $type
+		 * @param  string $sort
+		 * @param  string $direction
+		 * @return mixed
+		 */
+		public function get_your_repo_list( $visibility = 'all', $affiliation = 'owner, collaborator, organization_member', $type = 'all', $sort = 'full_name', $direction = 'asc' ) {
+		}
 		/**
 		 * get_user_repo_list
 		 *
@@ -1157,20 +1150,103 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_user_repo_list( $username, $type = 'owner', $sort = 'full_name', $direction = 'asc' ) {
 
 			$request = $this->api_url . 'users/' . $username . '/repos';
-			error_log( print_r( $request, true ) );
 			return $this->fetch( $request );
 		}
-		public function get_org_repo_list( $org ) {}
-		public function get_all_public_repo_list(){}
+		/**
+		 * Get_org_repo_list
+		 *
+		 * @param  string $org
+		 * @param  string $type
+		 * @return array/string
+		 */
+		public function get_org_repo_list( $org, $type = 'all' ) {
+			$request = $this->api_url . 'orgs/' . $org . '/repos';
+			return $this->fetch( $request );
+		}
+		/**
+		 * Get_all_public_repo_list
+		 *
+		 * @param  string $since
+		 * @return array/string
+		 */
+		public function get_all_public_repo_list( $since = '' ) {
+			if ( $since == '' ) {
+				$request = $this->api_url . 'repositories';
+				return $this->fetch( $request );
+			} else {
+				$request = $this->api_url . 'orgs/' . $org . '/repos';
+				return $this->fetch( $request );
+			}
+		}
 		public function post_repo( $org ) {}
-		public function get_repo( $owner, $repo ) {}
+			/**
+			 * Get_repo
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/list
+			 */
+		public function get_repo( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo;
+			return $this->fetch( $request );
+		}
 		public function patch_repo( $owner, $repo ) {}
-		public function get_all_repo_topics_list( $owner, $repo ) {}
+			/**
+			 * Get_all_repo_topics_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_all_repo_topics_list( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo . '/topics';
+			return $this->fetch( $request );
+		}
 		public function put_all_repo_topics( $owner, $repo ) {}
-		public function get_repo_contributor_list( $owner, $repo ) {}
-		public function get_language_repo_list( $owner, $repo ) {}
-		public function get_repo_team_list( $owner, $repo ) {}
-		public function get_repo_tag_list( $owner, $repo ) {}
+			/**
+			 * Get_repo_contributor_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_contributor_list( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo . '/contributors';
+			return $this->fetch( $request );
+		}
+		/**
+		 * Get_language_repo_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_language_repo_list( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo . '/languages';
+			return $this->fetch( $request );
+		}
+		/**
+		 * Get_repo_team_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_team_list( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo . '/teams';
+			return $this->fetch( $request );
+		}
+		/**
+		 * Get_repo_tag_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_tag_list( $owner, $repo ) {
+			$request = $this->api_url . 'repos/' . $owner . '/' . $repo . '/tags';
+			return $this->fetch( $request );
+		}
 		public function delete_repo( $owner, $repo ) {}
 
 			// Branches
