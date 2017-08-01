@@ -44,10 +44,11 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		static private $api_key;
 		/**
 		 * Argum
+		 *
 		 * @var [type]
 		 */
 		private $default_args = array(
-			'method' => 'GET'
+			'method' => 'GET',
 		);
 		/**
 		 * Return format. XML or JSON.
@@ -71,35 +72,17 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @param string $format   XML or JSON.
 		 * @param int    $callback If specified, returns json wrapped in a callback with the name passed in.
 		 */
-		public function __construct( $api_key = '', $format = 'json', $callback = null, $debug = false) {
+		public function __construct( $api_key = '', $format = 'json', $callback = null, $debug = false ) {
 
-					  static::$api_key = $api_key;
-					  static::$format  = $format;
-						static::$callback = $callback;
+					$this->args['headers'] = array(
+						'Authorization' => 'token ' . $api_key,
+					);
 
-						if( $debug ){
-							$this->debug = true;
-						}
+			if ( $debug ) {
+				$this->debug = true;
+			}
 		}
 
-
-		// /**
-		//  * Fetch the request from the API.
-		//  *
-		//  * @access private
-		//  * @param mixed $request Request URL.
-		//  * @return $body Body.
-		//  */
-		// private function fetch( $request ) {
-		// 	$response = wp_remote_get( $request );
-		// 	$code = wp_remote_retrieve_response_code( $response );
-		// 	if ( 200 !== $code ) {
-		// 		return new WP_Error( 'response-error', sprintf( __( 'Server response code: %d', 'wp-opensrs-api' ), $code ) );
-		// 	}
-		// 	$body = wp_remote_retrieve_body( $response );
-		// 	return json_decode( $body );
-		// }
-		//
 		/**
 		 * Fetch the request from the API.
 		 *
@@ -108,10 +91,11 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return $body Body.
 		 */
 		protected function fetch( $request ) {
+			// error_log( $this->api_url . $request . print_r( $this->args, true ));
 			$response = wp_remote_request( $this->api_url . $request, $this->args );
 			// error_log(print_r( $response, true ));
 			// if( $this->debug ){
-			// 	return $response;
+			// return $response;
 			// }
 			$code = wp_remote_retrieve_response_code( $response );
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
@@ -120,17 +104,17 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			}
 			return $body;
 		}
-		protected function build_request( $args = array() ){
+		protected function build_request( $args = array() ) {
 			// Resetting arguments based on defaults (if the defaults have them set).
 			$this->args = wp_parse_args( $this->default_args, $this->args );
 			// Setting arguments based passsed array.
 			$this->args = wp_parse_args( $args, $this->args );
 			// if( $this->debug ){ // Prevents spam emails during debug mode.
-			// 	if( isset( $this->args['body'] ) && isset( $this->args['body']['To'] ) ){
-			// 		$this->args['body']['To'] = $this->blackhole_email;
-			// 	}
+			// if( isset( $this->args['body'] ) && isset( $this->args['body']['To'] ) ){
+			// $this->args['body']['To'] = $this->blackhole_email;
 			// }
-			if( isset( $args['body'] ) && gettype( $args['body'] ) !== 'string' ){
+			// }
+			if ( isset( $args['body'] ) && gettype( $args['body'] ) !== 'string' ) {
 				$this->args['body'] = wp_json_encode( $this->args['body'] );
 			}
 			// error_log( print_r( $this->args, true ));
@@ -1177,14 +1161,17 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		/**
 		 * Get_your_repo_list
 		 *
-		 * @param  string $visibility
-		 * @param  string $affiliation
-		 * @param  string $type
-		 * @param  string $sort
-		 * @param  string $direction
-		 * @return mixed
+		 * @return array/list
 		 */
-		public function get_your_repo_list( $visibility = 'all', $affiliation = 'owner, collaborator, organization_member', $type = 'all', $sort = 'full_name', $direction = 'asc' ) {
+		public function get_your_repo_list() {
+			$args = array(
+				'visibility' => 'all',
+				'affiliation' => 'owner,collaborator,organization_member',
+				'type' => 'all',
+				'sort' => 'full_name',
+				'direction' => 'asc',
+			);
+			return $this->build_request( $args )->fetch( 'user/repos' );
 		}
 		/**
 		 * get_user_repo_list
@@ -1196,7 +1183,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return array/string
 		 */
 		public function get_user_repo_list( $username, $type = 'owner', $sort = 'full_name', $direction = 'asc' ) {
-			return $this->build_request()->fetch('users/' . $username . '/repos');
+			return $this->build_request()->fetch( 'users/' . $username . '/repos' );
 		}
 		/**
 		 * Get_org_repo_list
@@ -1206,7 +1193,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return array/string
 		 */
 		public function get_org_repo_list( $org, $type = 'all' ) {
-			return $this->build_request()->fetch('orgs/' . $org . '/repos');
+			return $this->build_request()->fetch( 'orgs/' . $org . '/repos' );
 		}
 		/**
 		 * Get_all_public_repo_list
@@ -1216,13 +1203,14 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 */
 		public function get_all_public_repo_list( $since = '' ) {
 			if ( $since == '' ) {
-				return $this->build_request()->fetch('repositories');
+				return $this->build_request()->fetch( 'repositories' );
 			} else {
-				return $this->build_request()->fetch('orgs/' . $org . '/repos');
+				return $this->build_request()->fetch( 'orgs/' . $org . '/repos' );
 			}
 		}
 		/**
 		 * Create_repo
+		 *
 		 * @param  string $org
 		 * @return Object
 		 */
@@ -1230,7 +1218,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 				$args = array(
 					'method' => 'POST',
 				);
-				return $this->build_request($args)->fetch('orgs/' . $org . '/repos');
+				return $this->build_request( $args )->fetch( 'orgs/' . $org . '/repos' );
 		}
 			/**
 			 * Get_repo
@@ -1240,10 +1228,11 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 * @return array/list
 			 */
 		public function get_repo( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo);
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo );
 		}
 		/**
 		 * Edit_repo
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @return
@@ -1252,7 +1241,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'PATCH',
 			);
-			return build_request($args)->fetch('repos/' . $owner . '/' . $repo);
+			return build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo );
 		}
 			/**
 			 * Get_all_repo_topics_list
@@ -1262,7 +1251,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 * @return array/string
 			 */
 		public function get_all_repo_topics_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/topics');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/topics' );
 		}
 		public function put_all_repo_topics( $owner, $repo ) {}
 			/**
@@ -1273,7 +1262,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			 * @return array/string
 			 */
 		public function get_repo_contributor_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/contributors');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/contributors' );
 		}
 		/**
 		 * Get_language_repo_list
@@ -1283,7 +1272,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return array/string
 		 */
 		public function get_language_repo_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/languages');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/languages' );
 		}
 		/**
 		 * Get_repo_team_list
@@ -1293,7 +1282,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return array/string
 		 */
 		public function get_repo_team_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/teams');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/teams' );
 		}
 		/**
 		 * Get_repo_tag_list
@@ -1303,10 +1292,11 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return array/string
 		 */
 		public function get_repo_tag_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/tags');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/tags' );
 		}
 		/**
 		 * Delete_repo
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @return Object
@@ -1315,54 +1305,59 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'DELETE',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo );
 		}
 
 			// Branches
 			/**
 			 * Get_branch_list
+			 *
 			 * @param  string $owner
 			 * @param  string $repo
 			 * @return array/string
 			 */
 		public function get_branch_list( $owner, $repo ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches' );
 		}
 		/**
 		 * Get_branch
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_branch( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch);
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch );
 		}
 		/**
 		 * Get_branch_protection
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_branch_protection( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection' );
 		}
 		/**
 		 * Update_branch_protection
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
-		 * @return
+		 * @return Object
 		 */
 		public function update_branch_protection( $owner, $repo, $branch ) {
 			$args = array(
 				'method' => 'PUT',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection' );
 		}
 		/**
 		 * Delete_branch_protection
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
@@ -1372,20 +1367,22 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'DELETE',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection' );
 		}
 		/**
 		 * Get_protected_branch_req_status
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_protected_branch_req_status( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks' );
 		}
 		/**
 		 * Update_protected_branch_req_status
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
@@ -1393,12 +1390,13 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 */
 		public function update_protected_branch_req_status( $owner, $repo, $branch ) {
 			$args = array(
-				'method' =>'PATCH',
-		);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks');
+				'method' => 'PATCH',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks' );
 		}
 		/**
 		 * Delete_protected_branch_req_status
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
@@ -1406,35 +1404,38 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 */
 		public function delete_protected_branch_req_status( $owner, $repo, $branch ) {
 			$args = array(
-				'method' => 'DELETE'
+				'method' => 'DELETE',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks' );
 		}
 		/**
 		 * Get_protected_branch_req_status_context_list
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_protected_branch_req_status_context_list( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts' );
 		}
 		/**
 		 * Replace_protected_branch_req_status_context
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
-		 * @return
+		 * @return Object
 		 */
 		public function replace_protected_branch_req_status_context( $owner, $repo, $branch ) {
 			$args = array(
 				'method' => 'PUT',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts' );
 		}
 		/**
 		 * Add_protected_branch_req_status_context
+		 *
 		 * @param string $owner
 		 * @param string $repo
 		 * @param string $branch
@@ -1444,10 +1445,11 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'POST',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts' );
 		}
 		/**
 		 * Delete_protected_branch_req_status_context
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
@@ -1457,20 +1459,22 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'DELETE',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_status_checks/contexts' );
 		}
 		/**
 		 * Get_protected_branch__req_review_enforce
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_protected_branch__req_review_enforce( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews' );
 		}
 		/**
 		 * Update_protected_branch__req_review_enforce
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
@@ -1480,76 +1484,485 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$args = array(
 				'method' => 'PATCH',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews/context');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews/context' );
 		}
 		/**
 		 * Delete_protected_branch__req_review_enforce
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
-		 * @return
+		 * @return Object
 		 */
 		public function delete_protected_branch__req_review_enforce( $owner, $repo, $branch ) {
 			$args = array(
 				'method' => 'DELETE',
 			);
-			return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews');
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/required_pull_request_reviews' );
 		}
 		/**
 		 * Get_protected_branch_admin_enforce
+		 *
 		 * @param  string $owner
 		 * @param  string $repo
 		 * @param  string $branch
 		 * @return array/string
 		 */
 		public function get_protected_branch_admin_enforce( $owner, $repo, $branch ) {
-			return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/tags');
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/enforce_admins' );
 		}
-		public function add_protected_branch_admin_enforce( $owner, $repo, $branch ) {}
-		public function delete_protected_branch_admin_enforce( $owner, $repo, $branch ) {}
-		public function get_protected_branch_restrictions( $owner, $repo, $branch ) {}
-		public function delete_protected_branch_restrictions( $owner, $repo, $branch ) {}
-		public function get_protected_branch_team_restrictions_list( $owner, $repo, $branch ) {}
-		public function put_protected_branch_team_restrictions( $owner, $repo, $branch ) {}
-		public function post_protected_branch_team_restrictions( $owner, $repo, $branch ) {}
-		public function delete_protected_branch_team_restrictions( $owner, $repo, $branch ) {}
-		public function get_protected_branch_user_restrictions_list( $owner, $repo, $branch ) {}
-		public function post_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
-		// public function post_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
-		public function delete_protected_branch_user_restrictions( $owner, $repo, $branch ) {}
+		/**
+		 * Add_protected_branch_admin_enforce
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $branch
+		 * @return
+		 */
+		public function add_protected_branch_admin_enforce( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/enforce_admins' );
+		}
+		/**
+		 * Delete_protected_branch_admin_enforce
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return Object
+		 */
+		public function delete_protected_branch_admin_enforce( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/enforce_admins' );
+		}
+		/**
+		 * Get_protected_branch_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return array/string
+		 */
+		public function get_protected_branch_restrictions( $owner, $repo, $branch ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions' );
+		}
+		/**
+		 * Delete_protected_branch_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return Object
+		 */
+		public function delete_protected_branch_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions' );
+		}
+		/**
+		 * Get_protected_branch_team_restrictions_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return array/string
+		 */
+		public function get_protected_branch_team_restrictions_list( $owner, $repo, $branch ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams' );
+		}
+		/**
+		 * replace_protected_branch_team_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return
+		 */
+		public function replace_protected_branch_team_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams' );
+		}
+		/**
+		 * Add_protected_branch_team_restrictions
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $branch
+		 * @return
+		 */
+		public function add_protected_branch_team_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams' );
+		}
+		/**
+		 * Delete_protected_branch_team_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return Object
+		 */
+		public function delete_protected_branch_team_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams' );
+		}
+		/**
+		 * Get_protected_branch_user_restrictions_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return array/string
+		 */
+		public function get_protected_branch_user_restrictions_list( $owner, $repo, $branch ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/users' );
+		}
+		/**
+		 * Replace_protected_branch_user_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return
+		 */
+		public function replace_protected_branch_user_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/users' );
+		}
+		/**
+		 * Add_protected_branch_user_restrictions
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $branch
+		 * @return
+		 */
+		public function add_protected_branch_user_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/users' );
+		}
+		/**
+		 * Delete_protected_branch_user_restrictions
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $branch
+		 * @return Object
+		 */
+		public function delete_protected_branch_user_restrictions( $owner, $repo, $branch ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/users' );
+		}
 
 			// Repo Collaborators
-		public function get_repo_collaborator_list( $owner, $repo ) {}
-		public function get_repo_collaborator_user( $owner, $repo, $username ) {}
-		public function get_repo_collaborator_user_permission_level( $owner, $repo, $username ) {}
-		public function put_repo_collaborator_user( $owner, $repo, $username ) {}
-		public function delete_repo_collaborator_user( $owner, $repo, $username ) {}
+		/**
+		 * Get_repo_collaborator_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_collaborator_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/collaborators' );
+		}
+		/**
+		 * Get_repo_collaborator_user
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $username
+		 * @return array/string
+		 */
+		public function get_repo_collaborator_user( $owner, $repo, $username ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/collaborators/' . $username );
+		}
+		/**
+		 * Get_repo_collaborator_user_permission_level
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $username
+		 * @return array/string
+		 */
+		public function get_repo_collaborator_user_permission_level( $owner, $repo, $username ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/collaborators/' . $username . '/permission' );
+		}
+		/**
+		 * Add_repo_collaborator_user
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $username
+		 * @return
+		 */
+		public function add_repo_collaborator_user( $owner, $repo, $username ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/collaborators/' . $username );
+		}
+		/**
+		 * Delete_repo_collaborator_user
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $username
+		 * @return
+		 */
+		public function delete_repo_collaborator_user( $owner, $repo, $username ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/collaborators/' . $username );
+		}
 
 			// Repo Comments
-		public function get_repo_comment_commit_list( $owner, $repo ) {}
-		public function get_repo_single_commit_comment_list( $owner, $repo, $ref ) {}
-		public function post_repo_comment_commit( $owner, $repo, $sha ) {}
-		public function get_repo_single_commit_comment( $owner, $repo, $id ) {}
-		public function patch_repo_comment_commit( $owner, $repo, $id ) {}
-		public function delete_repo_comment_commit( $owner, $repo, $id ) {}
+			/**
+			 * Get_repo_comment_commit_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_comment_commit_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/comments' );
+		}
+		/**
+		 * Get_repo_single_commit_comment_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $ref
+		 * @return array/string
+		 */
+		public function get_repo_single_commit_comment_list( $owner, $repo, $ref ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $ref . '/comments' );
+		}
+		/**
+		 * Create_repo_comment_commit
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $sha
+		 * @return
+		 */
+		public function create_repo_comment_commit( $owner, $repo, $sha ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $sha . '/comments' );
+		}
+		/**
+		 * Get_repo_single_commit_comment
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  int    $id
+		 * @return array/string
+		 */
+		public function get_repo_single_commit_comment( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/comments/' . $id );
+		}
+		/**
+		 * Update_repo_comment_commit
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param int    $id
+		 * @return
+		 */
+		public function update_repo_comment_commit( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'PATCH',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/comments/' . $id );
+		}
+		/**
+		 * Delete_repo_comment_commit
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  int    $id
+		 * @return
+		 */
+		public function delete_repo_comment_commit( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/comments/' . $id );
+		}
 
 			// Repo commit
-		public function get_repo_commit_list( $owner, $repo ) {}
-		public function get_repo_single_commit( $owner, $repo, $sha ) {}
-		public function get_repo_sha_1_commit_reference( $owner, $repo, $ref ) {}
-		public function get_two_commits( $owner, $repo, $base, $head ) {}
-		public function get_repo_verification_signature_commit( $owner, $repo, $sha ) {}
+			/**
+			 * Get_repo_commit_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_commit_list( $owner, $repo ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits' );
+		}
+			/**
+			 * Get_repo_single_commit
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $sha
+			 * @return array/string
+			 */
+		public function get_repo_single_commit( $owner, $repo, $sha ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $sha );
+		}
+			/**
+			 * Get_repo_sha_1_commit_reference
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $ref
+			 * @return array/string
+			 */
+		public function get_repo_sha_1_commit_reference( $owner, $repo, $ref ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $ref );
+		}
+			/**
+			 * Get_two_commits
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $base
+			 * @param  string $head
+			 * @return array/string
+			 */
+		public function get_two_commits( $owner, $repo, $base, $head ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $base . '...' . $head );
+		}
+			/**
+			 * Get_repo_verification_signature_commit
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $sha
+			 * @return array/string
+			 */
+		public function get_repo_verification_signature_commit( $owner, $repo, $sha ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $sha );
+		}
 
 			// Repo Community Profile
-		public function get_repo_metrics_profile_commun( $owner, $name ) {}
+			/**
+			 * Get_repo_metrics_profile_commun
+			 *
+			 * @param  string $owner
+			 * @param  string $name
+			 * @return array/string
+			 */
+		public function get_repo_metrics_profile_commun( $owner, $name ) {
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $name . '/community/profile' );
+		}
 
 			// Repo Contents
-		public function get_repo_readme( $owner, $repo ) {}
-		public function get_repo_contents( $owner, $repo, $path ) {}
-		public function put_repo_file( $owner, $repo, $path ) {}
-		// public function put_repo_file( $owner, $repo, $path ) {}
-		public function delete_repo_file( $owner, $repo, $path ) {}
-		public function get_repo_archive_link( $owner, $repo, $archive_format, $ref ) {}
+			/**
+			 * Get_repo_readme
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_readme( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/readme' );
+		}
+			/**
+			 * Get_repo_contents
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $path
+			 * @return array/string
+			 */
+		public function get_repo_contents( $owner, $repo, $path ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/contents/' . $path );
+		}
+			/**
+			 * Create_repo_file
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @param  string $path
+			 * @return
+			 */
+		public function create_repo_file( $owner, $repo, $path ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/contents/' . $path );
+
+		}
+		/**
+		 * Update_repo_file
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $path
+		 * @return
+		 */
+		public function update_repo_file( $owner, $repo, $path ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/contents/' . $path );
+		}
+		/**
+		 * Delete_repo_file
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $path
+		 * @return
+		 */
+		public function delete_repo_file( $owner, $repo, $path ) {
+			$args = array(
+				'method' => 'DELETE',
+				'path' => '',
+				'message' => '',
+				'sha' => '',
+				'branch' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/contents/' . $path );
+		}
+		/**
+		 * Get_repo_archive_link
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $archive_format
+		 * @param  string $ref
+		 * @return array/string
+		 */
+		public function get_repo_archive_link( $owner, $repo, $archive_format, $ref ) {
+			$args = array(
+				'archive_format' => 'tarall',
+				'ref' => 'master',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . $archive_format . '/' . $ref );
+		}
 
 			// Repo Deploy Keys
 		public function get_repo_deploy_key_list( $owner, $repo ) {}
