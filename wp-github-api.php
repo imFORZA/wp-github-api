@@ -1965,130 +1965,1213 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		}
 
 			// Repo Deploy Keys
-		public function get_repo_deploy_key_list( $owner, $repo ) {}
-		public function get_repo_deploy_key( $owner, $repo, $id ) {}
-		public function post_repo_deploy_key( $owner, $repo ) {}
-		public function patch_repo_deploy_key( $owner, $repo, $id ) {}
-		public function delete_repo_deploy_key( $owner, $repo, $id ) {}
+			/**
+			 * Get_repo_deploy_key_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_deploy_key_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/keys' );
+		}
+		/**
+		 * Get_repo_deploy_key
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_deploy_key( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/keys/' . $id );
+		}
+		/**
+		 * Add_repo_deploy_key
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @return
+		 */
+		public function add_repo_deploy_key( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'title' => '',
+				'key' => '',
+				'read_only' => '', // boolean
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/keys' );
+		}
+		/**
+		 * Edit_repo_deploy_key
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function edit_repo_deploy_key( $owner, $repo, $id ) {
+			$args = array(
+				'metod' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/keys' );
+		}
+		/**
+		 * Delete_repo_deploy_key
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function delete_repo_deploy_key( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/keys/' . $id );
+		}
 
 			// Repo Deployments
-		public function get_repo_deploy_list( $owner, $repo ) {}
-		public function get_single_repo_deploy( $owner, $repo, $deployment_id ) {}
-		public function post_repo_deploy( $owner, $repo ) {}
-		public function get_repo_deploy_status_list( $owner, $repo, $id ) {}
-		public function get_repo_single_deploy_status( $owner, $repo, $id, $status_id ) {}
-		public function post_repo_deploy_status( $owner, $repo, $id ) {}
+			/**
+			 * Get_repo_deploy_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_deploy_list( $owner, $repo ) {
+			$args = array(
+				'sha' => '',
+				'ref' => '',
+				'task' => '',
+				'enviroment' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/deployments' );
+		}
+		/**
+		 * Get_single_repo_deploy
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $deployment_id
+		 * @return array/string
+		 */
+		public function get_single_repo_deploy( $owner, $repo, $deployment_id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/deployments/' . $deployment_id );
+		}
+		/**
+		 * Create_repo_deploy
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function create_repo_deploy( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'ref' => '',
+				'task' => 'deploy',
+				'auto_merge' => 'true',
+				'required_contexts' => '',
+				'paylod' => '',
+				'environment' => 'production',
+				'description' => '',
+				'transient_environment' => 'false',
+				'production_environment' => 'true',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/deployments' );
+		}
+		/**
+		 * Get_repo_deploy_status_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_deploy_status_list( $owner, $repo, $id ) {
+			$args = array(
+				'id' => '', // integer
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/deployments/' . $id . '/statuses' );
+		}
+		/**
+		 * Get_repo_single_deploy_status
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @param  string $status_id
+		 * @return array/string
+		 */
+		public function get_repo_single_deploy_status( $owner, $repo, $id, $status_id ) {
+			$args = array(
+				'id' => '', // integer
+				'status_id' => '', // integar
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/deployments/' . $id . '/statuses/' . $status_id );
+		}
+		/**
+		 * Create_repo_deploy_status
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function create_repo_deploy_status( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'POST',
+				'state' => '',
+				'target_url' => '',
+				'log_url' => '',
+				'description' => '',
+				'environment_url' => '',
+				'auto_inactive' => 'true',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/deployments/' . $id . '/statuses' );
+		}
 
 			// Repo Downloads
-		public function get_repo_download_list( $owner, $repo ) {}
-		public function get_single_repo_download( $owner, $repo, $id ) {}
-		public function delete_repo_download( $owner, $repo, $id ) {}
+		/**
+		 * Get_repo_download_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_download_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/downloads' );
+		}
+		/**
+		 * Get_single_repo_download
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_single_repo_download( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/downloads/' . $id );
+		}
+		/**
+		 * Delete_repo_download
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function delete_repo_download( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/downloads/' . $id );
+		}
 
 			// Repo Forks
-		public function get_repo_fork_list( $owner, $repo ) {}
-		public function post_repo_fork( $owner, $repo ) {}
+			/**
+			 * Get_repo_fork_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_fork_list( $owner, $repo ) {
+			$args = array(
+				'sort' => 'newest',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/forks' );
+		}
+		/**
+		 * Create_repo_fork
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function create_repo_fork( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'organization' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/forks' );
+		}
 
 			// Repo Invitations
-		public function get_repo_invite_list( $owner, $repo ) {}
-		public function delete_repo_invite( $owner, $repo, $invitation_id ) {}
-		public function patch_repo_invite( $owner, $repo, $invitation_id ) {}
-		public function get_repo_user_invite_list(){}
-		// public function patch_repo_invite( $invitation_id ) {}
-		// public function delete_repo_invite( $invitation_id ) {}
+			/**
+			 * Get_repo_invite_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_invite_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/invitations' );
+		}
+		/**
+		 * Delete_repo_invite
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $invitation_id
+		 * @return
+		 */
+		public function delete_repo_invite( $owner, $repo, $invitation_id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+				return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/invitations/' . $invitation_id );
+		}
+		/**
+		 * Update_repo_invite
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $invitation_id
+		 * @return
+		 */
+		public function update_repo_invite( $owner, $repo, $invitation_id ) {
+			$args = array(
+				'method' => 'PATCH',
+				'permissions' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/invitations/' . $invitation_id );
+		}
+		/**
+		 * Get_repo_user_invite_list
+		 *
+		 * @return array/string
+		 */
+		public function get_repo_user_invite_list() {
+			return $this->build_request()->fetch( '/user/repository_invitations' );
+		}
+		/**
+		 * Accept_repo_invite
+		 *
+		 * @param  int $invitation_id
+		 * @return
+		 */
+		public function accept_repo_invite( $invitation_id ) {
+			$args = array(
+				'method' => 'PATCH',
+			);
+			return $this->build_request( $args )->fetch( '/user/repository_invitations/' . $invitation_id );
+		}
+		/**
+		 * Delete_repo_invite
+		 *
+		 * @param  int $invitation_id
+		 * @return
+		 */
+		public function decline_repo_invite( $invitation_id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( '/user/repository_invitations/' . $invitation_id );
+		}
+
 			// Repo Merging
-		public function post_repo_merge( $owner, $repo ) {}
+		/**
+		 * Perform_repo_merge
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function perform_repo_merge( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'base' => '',
+				'head' => '',
+				'commit_message' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/merges' );
+		}
 
 			// Repo Pages
-		public function get_repo_page_site_info( $owner, $repo ) {}
-		public function post_repo_page_build( $owner, $repo ) {}
-		public function get_repo_page_build_list( $owner, $repo ) {}
-		public function get_repo_latest_page_build_list( $owner, $repo ) {}
-		public function get_repo_specific_page_build_list( $owner, $repo, $id ) {}
+			/**
+			 * Get_repo_page_site_info
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_page_site_info( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/pages' );
+		}
+		/**
+		 * Request_repo_page_build
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function request_repo_page_build( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/pages/builds' );
+		}
+		/**
+		 * Get_repo_page_build_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_page_build_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/pages/builds' );
+		}
+		/**
+		 * Get_repo_latest_page_build_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_latest_page_build_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/pages/builds/latest' );
+		}
+		/**
+		 * Get_repo_specific_page_build_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_specific_page_build_list( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/pages/builds/' . $id );
+		}
 
 			// Repo releases
-		public function get_repo_release_list( $owner, $repo ) {}
-		public function get_repo_single_release( $owner, $repo, $id ) {}
-		public function get_repo_latest_release( $owner, $repo ) {}
-		public function get_repo_release_tag_name( $owner, $repo, $tag ) {}
-		public function post_repo_release( $owner, $repo ) {}
-		public function patch_repo_release( $owner, $repo, $id ) {}
-		public function delete_repo_release( $owner, $repo, $id ) {}
-		public function get_repo_release_as_list( $owner, $repo, $id ) {}
-		public function post_repo_release_as( $owner, $id ) {}
-		public function get_repo_release_single_as( $owern, $repo, $id ) {}
-		public function patch_repo_release_as( $owner, $repo, $id ) {}
-		public function delete_repo_release_as( $owner, $repo, $id ) {}
+			/**
+			 * Get_repo_release_list
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_release_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases' );
+		}
+		/**
+		 * Get_repo_single_release
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_single_release( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/' . $id );
+		}
+		/**
+		 * Get_repo_latest_release
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_latest_release( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/latest' );
+		}
+		/**
+		 * Get_repo_release_tag_name
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $tag
+		 * @return array/string
+		 */
+		public function get_repo_release_tag_name( $owner, $repo, $tag ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/tags/' . $tag );
+		}
+		/**
+		 * Create_repo_release
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function create_repo_release( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'tag_name' => '',
+				'target_commitish' => 'master',
+				'name' => '',
+				'body' => '',
+				'draft' => 'false',
+				'prerelease' => 'false',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/releases' );
+		}
+		/**
+		 * Edit_repo_release
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function edit_repo_release( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'PATCH',
+				'tag_name' => '',
+				'target_commitish' => 'master',
+				'name' => '',
+				'body' => '',
+				'draft' => 'false',
+				'prerelease' => 'false',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/releases/' . $id );
+		}
+		/**
+		 * Delete_repo_release
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function delete_repo_release( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/releases/' . $id );
+		}
+		/**
+		 * Get_repo_release_as_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_release_asset_list( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/' . $id . '/assets' );
+		}
+		/**
+		 * Update_repo_release_as
+		 *
+		 * @param  string $owner
+		 * @param  string $id
+		 * @return
+		 */
+		public function update_repo_release_asset( $owner, $id ) {
+			$args = array(
+				'method' => 'POST',
+				'Content-Type' => '',
+				'name' => '',
+				'label' => '',
+			);
+			// return $this->build_request($args)->fetch( 'repos/' . $owner . '/' . $repo . '/releases' );
+		}
+		/**
+		 * Get_repo_release_single_asset
+		 *
+		 * @param string $owern
+		 * @param string $repo
+		 * @param string $id
+		 * @return array/string
+		 */
+		public function get_repo_release_single_asset( $owern, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/assets/' . $id );
+		}
+		/**
+		 * Edit_repo_release_asset
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $id
+		 * @return
+		 */
+		public function edit_repo_release_asset( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'PATCH',
+				'name' => '',
+				'label' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/releases/assets/' . $id );
+		}
+		/**
+		 * Delete_repo_release_asset
+		 *
+		 * @param string $owner
+		 * @param string $repo
+		 * @param string $id
+		 * @return
+		 */
+		public function delete_repo_release_asset( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/releases/assets/' . $id );
+		}
 
 			// Repo Statistics
-		public function get_repo_delete_commit_count_contributors( $owner, $repo ) {}
-		public function get_repo_commit_activity_data_last_year( $owner, $repo ) {}
-		public function get_number_delete_week( $owner, $repo ) {}
-		public function get_repo_commit_count_weekly( $owner, $repo ) {}
-		public function get_number_commit_hour_day( $owner, $repo ) {}
+			/**
+			 * Get_repo_delete_commit_count_contributors
+			 *
+			 * @param  string $owner
+			 * @param  string $repo
+			 * @return array/string
+			 */
+		public function get_repo_delete_commit_count_contributors( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/stats/contributors' );
+		}
+		/**
+		 * Get_repo_commit_activity_data_last_year
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_commit_activity_data_last_year( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/stats/commit_activity' );
+		}
+		/**
+		 * Get_number_delete_week
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_number_delete_week( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/stats/code_frequency' );
+		}
+		/**
+		 * Get_repo_commit_count_weekly
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_commit_count_weekly( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/stats/participation' );
+		}
+		/**
+		 * Get_number_commit_hour_day
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_number_commit_hour_day( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/stats/punch_card' );
+		}
 
 			// Repo Status
-		public function post_repo_status( $owner, $repo, $sha ) {}
-		public function get_repo_specific_ref_status_list( $owner, $repo, $ref ) {}
-		public function get_repo_specific_ref_combined_status( $owner, $repo, $ref ) {}
+		/**
+		 * Create_repo_status
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $sha
+		 * @return
+		 */
+		public function create_repo_status( $owner, $repo, $sha ) {
+			$args = array(
+				'method' => 'POST',
+				'state' => '',
+				'target_url' => '',
+				'description' => '',
+				'context' => 'default',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/statuses/' . $sha );
+		}
+		/**
+		 * Get_repo_specific_ref_status_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $ref
+		 * @return array/string
+		 */
+		public function get_repo_specific_ref_status_list( $owner, $repo, $ref ) {
+			$args = array(
+				'ref' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $ref . '/statuses' );
+		}
+		/**
+		 * Get_repo_specific_ref_combined_status
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $ref
+		 * @return array/string
+		 */
+		public function get_repo_specific_ref_combined_status( $owner, $repo, $ref ) {
+			$args = array(
+				'ref' => '',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/commits/' . $ref . '/status' );
+		}
 
 			// Repo traffic
-		public function get_repo_referrers_list( $owner, $repo ) {}
-		public function get_repo_path_list( $owner, $repo ) {}
-		public function get_repo_views( $owner, $repo ) {}
-		public function get_repo_clone( $owner, $repo ) {}
+		/**
+		 * Get_repo_referrers_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_referrers_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/traffic/popular/referrers' );
+		}
+		/**
+		 * Get_repo_path_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_path_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/traffic/popular/paths' );
+		}
+		/**
+		 * Get_repo_views
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_views( $owner, $repo ) {
+			$args = array(
+				'per' => 'day',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/traffic/views' );
+		}
+		/**
+		 * Get_repo_clone
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_clone( $owner, $repo ) {
+			$args = array(
+				'per' => 'day',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/traffic/clones' );
+		}
 
 			// Repo Webhooks
-		public function get_repo_hook_list( $owner, $repo ) {}
-		public function get_repo_single_hook( $owner, $repo, $id ) {}
-		public function post_repo_hook( $owner, $repo ) {}
-		public function patch_repo_hook( $owner, $repo, $id ) {}
-		public function post_test_repo_hook( $owner, $repo, $id ) {}
-		public function post_ping_repo_hook( $owner, $repo, $id ) {}
-		public function delete_repo_hook( $owner, $repo, $id ) {}
-		public function pub_sub_hub_bub( $owner, $repo, $event ) {}
+		/**
+		 * Get_repo_hook_list
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return array/string
+		 */
+		public function get_repo_hook_list( $owner, $repo ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/hooks' );
+		}
+		/**
+		 * Get_repo_single_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_repo_single_hook( $owner, $repo, $id ) {
+			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/hooks/' . $id );
+		}
+		/**
+		 * Create_repo_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @return
+		 */
+		public function create_repo_hook( $owner, $repo ) {
+			$args = array(
+				'method' => 'POST',
+				'name' => '',
+				'config' => '',
+				'events' => [ 'push' ],
+				'active' => '', // bool
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/hooks' );
+		}
+		/**
+		 * Edit_repo_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function edit_repo_hook( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'PATCH',
+				'config' => '', // Object
+				'events' => [ 'push' ],
+				'add_events' => '', // Array
+				'remove_events' => '', // Array
+				'active' => '', // bool
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/hooks/' . $id );
+		}
+		/**
+		 * Test_repo_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function test_repo_hook( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/hooks/' . $id . '/tests' );
+		}
+		/**
+		 * Ping_repo_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function ping_repo_hook( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/hooks/' . $id . '/pings' );
+		}
+		/**
+		 * Delete_repo_hook
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $id
+		 * @return
+		 */
+		public function delete_repo_hook( $owner, $repo, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'repos/' . $owner . '/' . $repo . '/hooks/' . $id );
+		}
+		/**
+		 * Pub_sub_hub_bub
+		 *
+		 * @param   $owner
+		 * @param   $repo
+		 * @param   $event
+		 * @return
+		 */
+		public function pub_sub_hub_bub( $owner, $repo, $event ) {
+			$args = array(
+				'method' => 'POST',
+				'hub.mode' => '',
+				'hub.topic' => '',
+				'hub.callback' => '',
+				'hub.secret' => '',
+			);
+			return $this->build_request( $args )->fetch( 'hub' );
+		}
 		public function response_format( $owner, $repo ) {}
 
 			// Search
-		public function get_search_repo(){}
-		public function get_search_commit(){}
-		public function get_search_code(){}
-		public function get_search_issues(){}
-		public function get_search_users(){}
+		/**
+		 * Get_search_repo
+		 *
+		 * @return array/string
+		 */
+		public function get_search_repo() {
+			$args = array(
+				'q' => '',
+				'sort' => '',
+				'order' => 'desc',
+			);
+			return $this->build_request( $args )->fetch( 'search/repositories' );
+		}
+		/**
+		 * Get_search_commit
+		 *
+		 * @return array/string
+		 */
+		public function get_search_commit() {
+			$args = array(
+				'q' => '',
+				'sort' => '',
+				'order' => 'desc',
+			);
+			return $this->build_request( $args )->fetch( 'search/commits' );
+		}
+		/**
+		 * Get_search_code
+		 *
+		 * @return array/string
+		 */
+		public function get_search_code() {
+			$args = array(
+				'q' => '',
+				'sort' => '',
+				'order' => 'desc',
+			);
+			return $this->build_request( $args )->fetch( 'search/code' );
+		}
+		/**
+		 * Get_search_issues
+		 *
+		 * @return array/string
+		 */
+		public function get_search_issues() {
+			$args = array(
+				'q' => '',
+				'sort' => '',
+				'order' => 'desc',
+			);
+					return $this->build_request( $args )->fetch( 'search/issues' );
+		}
+				/**
+				 * Get_search_users
+				 *
+				 * @return array/string
+				 */
+		public function get_search_users() {
+			$args = array(
+				'q' => '',
+				'sort' => '',
+				'order' => 'desc',
+			);
+			return $this->build_request( $args )->fetch( 'search/users' );
+		}
+		/**
+		 * Text_match_metadata
+		 *
+		 * @return array/string
+		 */
+		public function text_match_metadata() {
+			$args = array(
+				'object_url' => '',
+				'object_type' => '',
+				'property' => '',
+				'fragment' => '',
+				'matches' => '',
+			);
+			return $this->build_request( $args )->fetch( 'search/issues' );
+		}
 
 			// Legacy Search
-		public function get_legacy_search_issues( $owner, $repo, $state, $keyword ) {}
-		public function get_legacy_search_repo( $keyword ) {}
-		public function get_legacy_search_user( $keyword ) {}
-		public function get_legacy_search_email( $email ) {}
+		/**
+		 * Get_legacy_search_issues
+		 *
+		 * @param  string $owner
+		 * @param  string $repo
+		 * @param  string $state
+		 * @param  string $keyword
+		 * @return array/string
+		 */
+		public function get_legacy_search_issues( $owner, $repo, $state, $keyword ) {
+			$args = array(
+				'state' => '',
+				'keyword' => '',
+			);
+			return $this->build_request( $args )->fetch( 'legacy/issues/search/' . $owner . '/' . $repo . '/' . $state . '/' . $keyword );
+		}
+		/**
+		 * Get_legacy_search_repo
+		 *
+		 * @param  string $keyword
+		 * @return array/string
+		 */
+		public function get_legacy_search_repo( $keyword ) {
+			$args = array(
+				'keyword' => '',
+				'language' => '',
+				'start_page' => '',
+				'sort' => '',
+				'order' => '',
+			);
+			return $this->build_request( $args )->fetch( 'legacy/repos/search/' . $keyword );
+		}
+		/**
+		 * Get_legacy_search_user
+		 *
+		 * @param  string $keyword
+		 * @return array/string
+		 */
+		public function get_legacy_search_user( $keyword ) {
+			$args = array(
+				'keyword' => '',
+				'start_page' => '',
+				'sort' => '',
+				'order' => '',
+			);
+			return $this->build_request( $args )->fetch( 'legacy/user/search/' . $keyword );
+		}
+		/**
+		 * Get_legacy_search_email
+		 *
+		 * @param  string $email
+		 * @return array/string
+		 */
+		public function get_legacy_search_email( $email ) {
+			$args = array(
+				'email' => '',
+			);
+			return $this->build_request( $args )->fetch( 'legacy/user/email/' . $email );
+		}
 
 			// SCIM
-		public function get_provisioned_identities_list( $organization ) {}
-		public function get_single_user_provision_details( $organization, $id ) {}
-		public function post_user_invite_provision( $organization ) {}
-		public function put_memembership_org_provision( $organization, $id ) {}
-		public function patch_user_attribute( $organization, $id ) {}
-		public function delete_org_user( $organization, $id ) {}
+			/**
+			 * Get_scim_supported_user_attributes
+			 *
+			 * @param  string $org
+			 * @param  string $id
+			 * @return array/string
+			 */
+		public function get_scim_supported_user_attributes( $org, $id ) {
+			$args = array(
+				'userName' => '',
+				'name.givenName' => '',
+				'name.lastName' => '',
+				'emails' => '', // Array
+				'externalId' => '',
+				'id' => '',
+				'active' => '', // bool
+			);
+			return $this->build_request( $args )->fetch( 'scim/v2/organizations/' . $org . '/Users/' . $id );
+		}
+		/**
+		 * Get_scim_provisioned_identities_list
+		 *
+		 * @param  string $organization
+		 * @return array/string
+		 */
+		public function get_scim_provisioned_identities_list( $org ) {
+			$args = array(
+				'startIndex' => '', // integer
+				'count' => '', // integer
+				'filter' => 'eq',
+			);
+			return $this->build_request( $args )->fetch( 'scim/v2/organizations/' . $org . '/Users' );
+		}
+		/**
+		 * Get_scim_single_user_provision_details
+		 *
+		 * @param  string $org
+		 * @param  string $id
+		 * @return array/string
+		 */
+		public function get_scim_single_user_provision_details( $org, $id ) {
+			return $this->build_request()->fetch( 'scim/v2/organizations/' . $org . '/Users/' . $id );
+		}
+		/**
+		 * Send_scim_user_invite_provision
+		 *
+		 * @param  string $org
+		 * @return
+		 */
+		public function send_scim_user_invite_provision( $org ) {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( '/scim/v2/organizations/' . $org . '/Users' );
+		}
+		/**
+		 * Update_scim_memembership_org_provision
+		 *
+		 * @param  string $org
+		 * @param  string $id
+		 * @return string
+		 */
+		public function update_scim_memembership_org_provision( $org, $id ) {
+			return $this->build_request()->fetch( '/scim/v2/organizations/' . $org . '/Users/' . $id );
+		}
+		/**
+		 * Update_scim_user_attribute
+		 *
+		 * @param  string $org
+		 * @param  string $id
+		 * @return
+		 */
+		public function update_scim_user_attribute( $org, $id ) {
+			$args = array(
+				'method' => 'PATCH',
+			);
+			return $this->build_request( $args )->fetch( '/scim/v2/organizations/' . $org . '/Users/' . $id );
+		}
+		/**
+		 * Delete_scim_org_user
+		 *
+		 * @param  string $org
+		 * @param  string $id
+		 * @return
+		 */
+		public function delete_scim_org_user( $org, $id ) {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( '/scim/v2/organizations/' . $org . '/Users/' . $id );
+		}
 
 			// Users
-		public function get_single_user( $username ) {}
-		public function get_authenticated_user(){}
-		public function patch_authenticated_user(){}
-		public function get_all_users(){}
+		/**
+		 * Get_single_user
+		 *
+		 * @param  string $username
+		 * @return array/string
+		 */
+		public function get_single_user( $username ) {
+			return $this->build_request()->fetch( 'users/' . $username );
+		}
+		/**
+		 * Get_authenticated_user
+		 *
+		 * @return array/string
+		 */
+		public function get_authenticated_user() {
+			return $this->build_request()->fetch( 'user' );
+		}
+		/**
+		 * Update_authenticated_user
+		 *
+		 * @return
+		 */
+		public function update_authenticated_user() {
+			$args = array(
+				'method' => 'PATCH',
+				'name' => '',
+				'email' => '',
+				'blog' => '',
+				'company' => '',
+				'location' => '',
+				'hireable' => '', // bool
+				'bio' => '',
+			);
+			return $this->build_request( $args )->fetch( 'user' );
+		}
+		/**
+		 * Get_all_users
+		 *
+		 * @return array/string
+		 */
+		public function get_all_users() {
+			$args = array(
+				'since' => '',
+			);
+			return $this->build_request( $args )->fetch( 'users' );
+		}
 
 			// User emails
-		public function get_user_email_ress_list(){}
-		public function get_user_public_email_ress_list(){}
-		public function post_user_email_ress(){}
-		public function delete_user_email_ress(){}
-		public function patch_user_primary_email_visibiltiy(){}
+		/**
+		 * Get_user_email_ress_list
+		 *
+		 * @return array/string
+		 */
+		public function get_user_email_address_list() {
+			return $this->build_request()->fetch( 'user/emails' );
+		}
+		/**
+		 * Get_user_public_email_address_list
+		 *
+		 * @return array/string
+		 */
+		public function get_user_public_email_address_list() {
+			return $this->build_request()->fetch( 'user/public_emails' );
+		}
+		/**
+		 * Add_user_email_address
+		 *
+		 * @return
+		 */
+		public function add_user_email_address() {
+			$args = array(
+				'method' => 'POST',
+			);
+			return $this->build_request( $args )->fetch( 'user/emails' );
+		}
+		/**
+		 * Delete_user_email_address
+		 *
+		 * @return
+		 */
+		public function delete_user_email_address() {
+			$args = array(
+				'method' => 'DELETE',
+			);
+			return $this->build_request( $args )->fetch( 'user/emails' );
+		}
+		/**
+		 * Toggle_user_primary_email_visibiltiy
+		 *
+		 * @return
+		 */
+		public function toggle_user_primary_email_visibiltiy() {
+			$args = array(
+				'method' => 'PATCH',
+			);
+			return $this->build_request( $args )->fetch( 'user/email/visibility' );
+		}
 
 			// User Followers
-		public function get_user_follower_list( $username ) {}
-		public function get_user_follow_user_list( $username ) {}
-		public function get_user_follow_personal_user( $username ) {}
-		public function get_user_follows_user( $username, $tar_user ) {}
-		public function put_user_follow( $username ) {}
-		public function delete_user_follow( $username ) {}
+			/**
+			 * Get_user_follower_list
+			 *
+			 * @param  string $username
+			 * @return array/string
+			 */
+		public function get_user_follower_list( $username ) {
+			return $this->build_request()->fetch( 'users/' . $username . '/followers' );
+		}
+		/**
+		 * Get_user_follow_user_list
+		 *
+		 * @param  string $username
+		 * @return array/string
+		 */
+		public function get_user_follow_user_list( $username ) {
+			return $this->build_request()->fetch( 'user/followers' );
+		}
+		/**
+		 * Get_user_follow_personal_user
+		 *
+		 * @param  string $username
+		 * @return array/string
+		 */
+		public function get_user_follow_personal_user( $username ) {
+			return $this->build_request()->fetch( 'user/following/' . $username );
+		}
+		/**
+		 * Get_user_follows_user
+		 *
+		 * @param  string $username
+		 * @param  string $target_user
+		 * @return array/string
+		 */
+		public function get_user_follows_user( $username, $target_user ) {
+			return $this->build_request()->fetch( 'users/' . $username . '/following/' . $target_user );
+		}
+		/**
+		 * User_follow
+		 *
+		 * @param  string $username
+		 * @return
+		 */
+		public function user_follow( $username ) {
+			$args = array(
+				'method' => 'PUT',
+			);
+			return $this->build_request( $args )->fetch( 'user/following/' . $username );
+		}
+		/**
+		 * Delete_user_follow
+		 *
+		 * @param  string $username
+		 * @return
+		 */
+		public function delete_user_follow( $username ) {
+			return $this->build_request()->fetch( 'user/following/' . $username );
+		}
 
 			// User Git SSH Keys
 		public function get_user_public_key_list( $username ) {}

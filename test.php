@@ -28,7 +28,7 @@ if ( ! class_exists( 'Test' ) ) {
 
 	 $client = new GithubAPI('access_token');
 
-	 error_log(print_r($client->get_your_repo_list(),true));
+	//error_log(print_r($client->get_your_repo_list(),true));
 	class Test {
 
 	}
