@@ -26,9 +26,9 @@ if ( ! class_exists( 'Test' ) ) {
 
 	 include_once('wp-github-api.php');
 
-	 $client = new GithubAPI('access_token');
+	 $client = new GithubAPI('52f525e30371570bc32d202154d0120807fa35f3');
 
-	//error_log(print_r($client->get_your_repo_list(),true));
+	error_log(print_r($client->get_your_repo_list(),true));
 	class Test {
 
 	}

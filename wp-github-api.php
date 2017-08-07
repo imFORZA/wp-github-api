@@ -65,6 +65,13 @@ if (!class_exists('GithubAPI')) {
         protected $args = array( );
 
         /**
+         * Route being called.
+         *
+         * @var string
+         */
+        protected $route = '';
+
+        /**
          * Constructor.
          *
          * @param string $api_key  API key to the account.
@@ -85,14 +92,13 @@ if (!class_exists('GithubAPI')) {
         /**
          * Prepares API request.
          *
-         * @param string  $route   API route to make the call to.
+         * @param string $route   API route to make the call to.
          * @param  array  $args    Arguments to pass into the API call.
          * @param  array  $method  HTTP Method to use for request.
          * @return self            Returns an instance of itself so it can be chained to the fetch method.
          */
         protected function build_request($route, $args = array( ), $method = 'GET') {
             // Start building query.
-            $this->set_headers();
             $this->args['method'] = $method;
             $this->route          = $route;
             // Generate query string for GET requests.
@@ -105,6 +111,25 @@ if (!class_exists('GithubAPI')) {
             }
             return $this;
         }
+
+        /**
+         * Check if HTTP status code is a success.
+         *
+         * @param  int $code HTTP status code.
+         * @return boolean       True if status is within valid range.
+         */
+        protected function is_status_ok($code) {
+            return (200 <= $code && 300 > $code);
+        }
+
+        /**
+         * Clear query data.
+         */
+        protected function clear( ) {
+            $this->args       = array( );
+            $this->query_args = array( );
+        }
+
         /**
          * Fetch the request from the API.
          *
@@ -112,16 +137,14 @@ if (!class_exists('GithubAPI')) {
          * @return array|WP_Error Request results or WP_Error on request failure.
          */
         protected function fetch( ) {
-            _error_log($this->args);
             // Make the request.
-            $response = wp_remote_request($this->base_uri . $this->route, $this->args);
+            $response = wp_remote_request($this->api_url . $this->route, $this->args);
             // Retrieve Status code & body.
             $code     = wp_remote_retrieve_response_code($response);
             $body     = json_decode(wp_remote_retrieve_body($response));
-            _error_log($body);
             // Return WP_Error if request is not successful.
             if (!$this->is_status_ok($code)) {
-                return new WP_Error('response-error', sprintf(__('Status: %d', 'wp-postmark-api'), $code), $body);
+                return new WP_Error('response-error', sprintf(__('Status: %d', 'wp-github-api'), $code), $body);
             }
             $this->clear();
             return $body;
@@ -177,7 +200,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Put_create_oauth_authorization_specific_app
          *
-         * @param string  $client_id client identification
+         * @param string $client_id client identification
          * @return authorization
          */
         public function put_create_oauth_authorization_specific_app($client_id) {
@@ -185,8 +208,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Put_create_oauth_authorization_specific_app_fingerprint
          *
-         * @param string  $client_id client identification
-         * @param string  $fingerprint fingetprint
+         * @param string $client_id client identification
+         * @param string $fingerprint fingetprint
          * @return authorization
          */
         public function put_create_oauth_authorization_specific_app_fingerprint($client_id, $fingerprint) {
@@ -210,8 +233,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_oauth_authorization
          *
-         * @param string  $client_id client identification
-         * @param string  $access_token access token
+         * @param string $client_id client identification
+         * @param string $access_token access token
          * @return authorization
          */
         public function get_oauth_authorization($client_id, $access_token) {
@@ -220,7 +243,7 @@ if (!class_exists('GithubAPI')) {
          * Post_oauth_reset_authorization
          *
          * @param string $client_id client identification
-         * @param string  $access_token access token
+         * @param string $access_token access token
          * @return authorization
          */
         public function post_oauth_reset_authorization($client_id, $access_token) {
@@ -228,8 +251,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * delete_oauth_authorization_app
          *
-         * @param string  $client_id client identification
-         * @param string  $access_token access token
+         * @param string $client_id client identification
+         * @param string $access_token access token
          * @return authorization
          */
         public function delete_oauth_authorization_app($client_id, $access_token) {
@@ -237,8 +260,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Delete_oauth_grant_app
          *
-         * @param string  $client_id client identification
-         * @param string  $access_token access token
+         * @param string $client_id client identification
+         * @param string $access_token access token
          * @return grant
          */
         public function delete_oauth_grant_app($client_id, $access_token) {
@@ -281,7 +304,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_received_user_events_list description
          *
-         * @param string  $username user of the repo
+         * @param string $username user of the repo
          * @return Event events that are recieved by watching repos and following users
          */
         public function get_received_user_events_list($username) {
@@ -289,7 +312,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_public_received_user_events_list description
          *
-         * @param string  $username user of the repo
+         * @param string $username user of the repo
          * @return Event public events that a user recieved
          */
         public function get_public_received_user_events_list($username) {
@@ -297,7 +320,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_performed_events_list description
          *
-         * @param string  $username user of the repo
+         * @param string $username user of the repo
          * @return Event events performed by a user         [
          */
         public function get_user_performed_events_list($username) {
@@ -305,7 +328,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_publice_events_user_list description
          *
-         * @param string  $username user of the repo
+         * @param string $username user of the repo
          * @return Event public events performed by a user
          */
         public function get_publice_events_user_list($username) {
@@ -313,7 +336,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_organization_events_list description
          *
-         * @param string  $username user of the repo
+         * @param string $username user of the repo
          * @param  array  $org organization
          * @return Event user's organization dashboard. Must be authenticated as a user to view
          */
@@ -332,10 +355,10 @@ if (!class_exists('GithubAPI')) {
         /**
          * Post_event description
          *
-         * @param string  $ref_type      The object that was created. Can be one of "repository", "branch", or "tag"
-         * @param string  $ref           The git ref (or null if only a repository was created).
-         * @param string  $master_branch The name of the repository's default branch (usually master).
-         * @param string  $description   The repository's current description.
+         * @param string $ref_type      The object that was created. Can be one of "repository", "branch", or "tag"
+         * @param string $ref           The git ref (or null if only a repository was created).
+         * @param string $master_branch The name of the repository's default branch (usually master).
+         * @param string $description   The repository's current description.
          * @return
          */
         public function post_event($ref_type, $ref, $master_branch, $description) {
@@ -343,8 +366,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Delete_event description
          *
-         * @param string  $ref_type The object that was deleted. Can be "branch" or "tag".
-         * @param string  $ref      The full git ref.
+         * @param string $ref_type The object that was deleted. Can be "branch" or "tag".
+         * @param string $ref      The full git ref.
          * @return
          */
         public function delete_event($ref_type, $ref) {
@@ -353,10 +376,10 @@ if (!class_exists('GithubAPI')) {
          * Deployment_event description
          *
          * @param  object $deployment  The deployment
-         * @param string  $sha         The commit SHA for which this deployment was created.
-         * @param string  $payload     The optional extra information for this deployment.
-         * @param string  $enviroment  The optional environment to deploy to. Default: "production"
-         * @param string  $description The optional human-readable description added to the deployment.
+         * @param string $sha         The commit SHA for which this deployment was created.
+         * @param string $payload     The optional extra information for this deployment.
+         * @param string $enviroment  The optional environment to deploy to. Default: "production"
+         * @param string $description The optional human-readable description added to the deployment.
          * @param  object $repository  The repository for this deployment.
          * @return
          */
@@ -366,9 +389,9 @@ if (!class_exists('GithubAPI')) {
          * Deployment_event_stats description
          *
          * @param  object $deployment_status The deployment status.
-         * @param string  $state             The new state. Can be pending, success, failure, or error.
-         * @param string  $tar_url           The optional link added to the status.
-         * @param string  $description       The optional human-readable description added to the status.
+         * @param string $state             The new state. Can be pending, success, failure, or error.
+         * @param string $tar_url           The optional link added to the status.
+         * @param string $description       The optional human-readable description added to the status.
          * @param  object $deployment        The deployment that this status is associated with.
          * @param  object $repository        The repository for this deployment.
          * @return
@@ -461,8 +484,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param  bool   $all If true, show notifications marked as read. Default: false
          * @param  bool   $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
-         * @param string  $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
-         * @param string  $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+         * @param string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+         * @param string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
          * @return
          */
         public function get_notifications_list($all, $participating, $since, $before) {
@@ -474,8 +497,8 @@ if (!class_exists('GithubAPI')) {
          * @param string $repo   The specified repository
          * @param  bool   $all If true, show notifications marked as read. Default: false
          * @param  bool   $participating If true, only shows notifications in which the user is directly participating or mentioned. Default: false
-         * @param string  $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
-         * @param string  $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+         * @param string $since Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+         * @param string $before Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
          * @return
          */
         public function get_repo_notifications_list($owner, $repo, $all, $participating, $since, $before) {
@@ -492,7 +515,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository`
          * @param string $repo   The specified repository
-         * @param string  $last_reat_at Describes the last point that notifications were checked. Anything updated since this time will not be updated. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
+         * @param string $last_reat_at Describes the last point that notifications were checked. Anything updated since this time will not be updated. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Default: Time.now
          * @return
          */
         public function put_repo_notifications_read($owner, $repo, $last_reat_at) {
@@ -551,7 +574,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_starred_rep_list description
          *
-         * @param string  $username username
+         * @param string $username username
          * @return
          */
         public function get_starred_rep_list($username) {
@@ -653,8 +676,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_gist_list description
          *
-         * @param string  $username username
-         * @param string  $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+         * @param string $username username
+         * @param string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
          * @return
          */
         public function get_user_gist_list($username, $since) {
@@ -662,7 +685,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_all_public_gist_list description
          *
-         * @param string  $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+         * @param string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
          * @return
          */
         public function get_all_public_gist_list($since) {
@@ -670,7 +693,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_starred_gist_list description
          *
-         * @param string  $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
+         * @param string $since A timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. Only gists updated at or after this time are returned.
          * @return
          */
         public function get_starred_gist_list($since) {
@@ -686,8 +709,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_specific_revision_gist description
          *
-         * @param int $id  identification number
-         * @param string   $sha The commit SHA for which this deployment was created.
+         * @param int    $id  identification number
+         * @param string $sha The commit SHA for which this deployment was created.
          * @return
          */
         public function get_specific_revision_gist($id, $sha) {
@@ -696,7 +719,7 @@ if (!class_exists('GithubAPI')) {
          * Post_gist description
          *
          * @param  object  $files       Required. Files that make up this gist.
-         * @param string   $description A description of the gist.
+         * @param string  $description A description of the gist.
          * @param  boolean $public      Indicates whether the gist is public. Default: false
          * @return
          */
@@ -705,11 +728,11 @@ if (!class_exists('GithubAPI')) {
         /**
          * Patch_gist description
          *
-         * @param int $id identification number
-         * @param string   $description A description of the gist.
-         * @param  object  $files       Files that make up this gist.
-         * @param string   $content     Updated file contents.
-         * @param string   $filename    New name for this file.
+         * @param int    $id identification number
+         * @param string $description A description of the gist.
+         * @param  object $files       Files that make up this gist.
+         * @param string $content     Updated file contents.
+         * @param string $filename    New name for this file.
          * @return
          */
         public function patch_gist($id, $description, $files, $content, $filename) {
@@ -1653,11 +1676,11 @@ if (!class_exists('GithubAPI')) {
          *
          * List repositories for the specified org.
          *
-         * @param string  $visibility  Can be one of all, public, or private. Default: all
-         * @param string  $affiliation Comma-separated list of values. Can include: owner: Repositories that are owned by the authenticated user. collaborator: Repositories that the user has been added to as a collaborator. organization_member: Repositories that the user has access to through being a member of an organization. This includes every repository on every team that the user is on. Default: owner,collaborator,organization_member
-         * @param string  $type        Can be one of all, owner, public, private, member. Default: all Will cause a 422 error if used in the same request as visibility or affiliation.
-         * @param string  $sort        Can be one of created, updated, pushed, full_name. Default: full_name
-         * @param string  $direction   Can be one of asc or desc. Default: when using full_name: asc; otherwise desc
+         * @param string $visibility  Can be one of all, public, or private. Default: all
+         * @param string $affiliation Comma-separated list of values. Can include: owner: Repositories that are owned by the authenticated user. collaborator: Repositories that the user has been added to as a collaborator. organization_member: Repositories that the user has access to through being a member of an organization. This includes every repository on every team that the user is on. Default: owner,collaborator,organization_member
+         * @param string $type        Can be one of all, owner, public, private, member. Default: all Will cause a 422 error if used in the same request as visibility or affiliation.
+         * @param string $sort        Can be one of created, updated, pushed, full_name. Default: full_name
+         * @param string $direction   Can be one of asc or desc. Default: when using full_name: asc; otherwise desc
          * @return array|string
          */
         public function get_your_repo_list($visibility = 'all', $affiliation = 'owner,collaborator,organization_member', $type = 'all', $sort = 'full_name', $direction = 'asc') {
@@ -1676,10 +1699,10 @@ if (!class_exists('GithubAPI')) {
          *
          * List public repositories for the specified user.
          *
-         * @param string  $username Github username
-         * @param string  $type Can be one of all, owner, member. Default: owner
-         * @param string  $sort Can be one of created, updated, pushed, full_name. Default: full_name
-         * @param string  $direction Can be one of asc or desc. Default: when using full_name: asc, otherwise desc
+         * @param string $username Github username
+         * @param string $type Can be one of all, owner, member. Default: owner
+         * @param string $sort Can be one of created, updated, pushed, full_name. Default: full_name
+         * @param string $direction Can be one of asc or desc. Default: when using full_name: asc, otherwise desc
          * @return array|string
          */
         public function get_user_repo_list($username, $type = 'owner', $sort = 'full_name', $direction = 'asc') {
@@ -1697,8 +1720,8 @@ if (!class_exists('GithubAPI')) {
          *
          * List repositories for the specified org.
          *
-         * @param string  $org organization
-         * @param string  $type Can be one of all, public, private, forks, sources, member. Default: all
+         * @param string $org organization
+         * @param string $type Can be one of all, public, private, forks, sources, member. Default: all
          * @return array|string
          */
         public function get_org_repo_list($org, $type = 'all') {
@@ -1714,7 +1737,7 @@ if (!class_exists('GithubAPI')) {
          * This provides a dump of every public repository, in the order that they were created.
          * Note: Pagination is powered exclusively by the since parameter. Use the Link header to get the URL for the next page of repositories.
          *
-         * @param string  $since
+         * @param string $since
          * @return array|string
          */
         public function get_all_public_repo_list($since = '') {
@@ -1742,18 +1765,18 @@ if (!class_exists('GithubAPI')) {
          *
          * Create a new repository in this organization. The authenticated user must be a member of the specified organization.
          *
-         * @param string   $org                organization
-         * @param string   $name               Required. The name of the repository.
-         * @param string   $description         A short description of the repository.
-         * @param string   $homepage           A URL with more information about the repository.
+         * @param string  $org                organization
+         * @param string  $name               Required. The name of the repository.
+         * @param string  $description         A short description of the repository.
+         * @param string  $homepage           A URL with more information about the repository.
          * @param  boolean $private                Either true to create a private repository or false to create a public one. Creating private repositories requires a paid GitHub account. Default: false.
          * @param  boolean $has_issues         Either true to enable issues for this repository or false to disable them. Default: true.
          * @param  boolean $has_projects       Either true to enable projects for this repository or false to disable them. Default: true. Note: If you're creating a repository in an organization that has disabled repository projects, the default is false, and if you pass true, the API returns an error.
          * @param  boolean $has_wiki           Either true to enable the wiki for this repository or false to disable it. Default: true.
-         * @param int $team_id            The id of the team that will be granted access to this repository. This is only valid when creating a repository in an organization.
-         * @param string   $auto_init               Pass true to create an initial commit with empty README. Default: false.
-         * @param string   $gitignore_template Desired language or platform .gitignore template to apply. Use the name of the template without the extension. For example, "Haskell".
-         * @param string   $license_template   Desired LICENSE template to apply. Use the name of the template without the extension. For example, "mit" or "mozilla".
+         * @param int     $team_id            The id of the team that will be granted access to this repository. This is only valid when creating a repository in an organization.
+         * @param string  $auto_init               Pass true to create an initial commit with empty README. Default: false.
+         * @param string  $gitignore_template Desired language or platform .gitignore template to apply. Use the name of the template without the extension. For example, "Haskell".
+         * @param string  $license_template   Desired LICENSE template to apply. Use the name of the template without the extension. For example, "mit" or "mozilla".
          * @param  boolean $allow_squash_merge     Either true to allow squash-merging pull requests, or false to prevent squash-merging. Default: true
          * @param  boolean $allow_merge_commit Either true to allow merging pull requests with a merge commit, or false to prevent merging pull requests with merge commits. Default: true
          * @param  boolean $allow_rebase_merge     Either true to allow rebase-merging pull requests, or false to prevent rebase-merging. Default: true
@@ -1795,16 +1818,16 @@ if (!class_exists('GithubAPI')) {
          *
          * Edits specified repository
          *
-         * @param string $owner  The owner of the repository`
-         * @param string $repo   The specified repository
-         * @param string   $name               Required. The name of the repository.
-         * @param string   $description        A short description of the repository.
-         * @param string   $homepage           A URL with more information about the repository.
+         * @param string  $owner  The owner of the repository`
+         * @param string  $repo   The specified repository
+         * @param string  $name               Required. The name of the repository.
+         * @param string  $description        A short description of the repository.
+         * @param string  $homepage           A URL with more information about the repository.
          * @param  boolean $private             Either true to make the repository private or false to make it public. Creating private repositories requires a paid GitHub account. Default: false.
          * @param  boolean $has_issues         Either true to enable issues for this repository or false to disable them. Default: true.
          * @param  boolean $has_projects       Either true to enable projects for this repository or false to disable them. Default: true. Note: If you're creating a repository in an organization that has disabled repository projects, the default is false, and if you pass true, the API returns an error.
          * @param  boolean $has_wiki           Either true to enable the wiki for this repository or false to disable it. Default: true.
-         * @param string   $default_branch     Updates the default branch for this repository.
+         * @param string  $default_branch     Updates the default branch for this repository.
          * @param  boolean $allow_squash_merge Either true to allow squash-merging pull requests, or false to prevent squash-merging. Default: true
          * @param  boolean $allow_merge_commit  Either true to allow merging pull requests with a merge commit, or false to prevent merging pull requests with merge commits. Default: true
          * @param  boolean $allow_rebase_merge Either true to allow rebase-merging pull requests, or false to prevent rebase-merging. Default: true
@@ -1845,8 +1868,8 @@ if (!class_exists('GithubAPI')) {
          *
          * Replace all the repository topics that developers can see.
          *
-         * @param string $owner  The owner of the repository`
-         * @param string $repo   The specified repository
+         * @param string    $owner  The owner of the repository`
+         * @param string    $repo   The specified repository
          * @param string [] $names Required. An array of topics to add to the repository. Pass one or more topics to replace the set of existing topics. Send an empty array ([]) to clear all topics from the repository.
          * @return [type]
          */
@@ -1948,7 +1971,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specic branch that is connected to the repository
+         * @param string $branch The specic branch that is connected to the repository
          * @return array|string
          */
         public function get_branch($owner, $repo, $branch) {
@@ -1962,7 +1985,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_branch_protection($owner, $repo, $branch) {
@@ -1978,7 +2001,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner                  The owner of the repository
          * @param string $repo                   The specified repository
-         * @param string  $branch                 The specific branch that is connected to the repository
+         * @param string $branch                 The specific branch that is connected to the repository
          * @param  array  $required_status_checks
          * @param  array  $enforce_admins
          * @param  array  $restrictions
@@ -1996,7 +2019,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specific branch that is connected to the repostiory
+         * @param string $branch The specific branch that is connected to the repostiory
          * @return
          */
         public function delete_branch_protection($owner, $repo, $branch) {
@@ -2011,7 +2034,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repostiory
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_req_status($owner, $repo, $branch) {
@@ -2025,7 +2048,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the respository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @param  bool   $strict   Require branches to be up to date before merging.
          * @param array  $contexts  The list of status checks to require in order to merge into this branch
          * @return
@@ -2042,7 +2065,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return
          */
         public function delete_protected_branch_req_status($owner, $repo, $branch) {
@@ -2057,7 +2080,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repostiory
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_req_status_context_list($owner, $repo, $branch) {
@@ -2071,7 +2094,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return Object
          */
         public function replace_protected_branch_req_status_context($owner, $repo, $branch) {
@@ -2101,7 +2124,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specific branch that is connected to the repostiory
+         * @param string $branch The specific branch that is connected to the repostiory
          * @return
          */
         public function delete_protected_branch_req_status_context($owner, $repo, $branch) {
@@ -2116,7 +2139,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch__req_review_enforce($owner, $repo, $branch) {
@@ -2130,7 +2153,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner
          * @param string $repo
-         * @param string  $branch
+         * @param string $branch
          * @return
          */
         public function update_protected_branch__req_review_enforce($owner, $repo, $branch) {
@@ -2147,7 +2170,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return Object
          */
         public function delete_protected_branch__req_review_enforce($owner, $repo, $branch) {
@@ -2161,7 +2184,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repostiory
-         * @param string  $branch The speific branch that is connected to the repository
+         * @param string $branch The speific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_admin_enforce($owner, $repo, $branch) {
@@ -2190,7 +2213,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return Object
          */
         public function delete_protected_branch_admin_enforce($owner, $repo, $branch) {
@@ -2206,7 +2229,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_restrictions($owner, $repo, $branch) {
@@ -2220,8 +2243,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is conencted to the repository
-         * @return Object
+         * @param string $branch  The specific branch that is conencted to the repository
+         * @return
          */
         public function delete_protected_branch_restrictions($owner, $repo, $branch) {
             $args = array( );
@@ -2235,11 +2258,11 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch  The specific branch that is connected to the repository
+         * @param string $branch  The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_team_restrictions_list($owner, $repo, $branch) {
-            return $this->build_request()->fetch('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams');
+            return $this->build_request('repos/' . $owner . '/' . $repo . '/branches/' . $branch . '/protection/restrictions/teams')->fetch();
         }
 
         /**
@@ -2249,7 +2272,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo   The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return
          */
         public function replace_protected_branch_team_restrictions($owner, $repo, $branch) {
@@ -2279,7 +2302,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return Object
          */
         public function delete_protected_branch_team_restrictions($owner, $repo, $branch) {
@@ -2294,7 +2317,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo   The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return array|string
          */
         public function get_protected_branch_user_restrictions_list($owner, $repo, $branch) {
@@ -2308,7 +2331,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner  The owner of the repository
          * @param string $repo   The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return
          */
         public function replace_protected_branch_user_restrictions($owner, $repo, $branch) {
@@ -2319,7 +2342,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Add_protected_branch_user_restrictions
          *
-         *Adds user restrictions of protected branch
+         * Adds user restrictions of protected branch
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2338,7 +2361,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $branch The specific branch that is connected to the repository
+         * @param string $branch The specific branch that is connected to the repository
          * @return Object
          */
         public function delete_protected_branch_user_restrictions($owner, $repo, $branch) {
@@ -2349,6 +2372,8 @@ if (!class_exists('GithubAPI')) {
         // Repo Collaborators
         /**
          * Get_repo_collaborator_list
+         *
+         *List collaborators
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2361,9 +2386,11 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_repo_collaborator_user
          *
+         * Check if a user is a collaborator
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_repo_collaborator_user($owner, $repo, $username) {
@@ -2373,9 +2400,11 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_repo_collaborator_user_permission_level
          *
+         * Review a user's permission level
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_repo_collaborator_user_permission_level($owner, $repo, $username) {
@@ -2384,6 +2413,8 @@ if (!class_exists('GithubAPI')) {
 
         /**
          * Add_repo_collaborator_user
+         *
+         * Add user as a collaborator
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2398,10 +2429,12 @@ if (!class_exists('GithubAPI')) {
         /**
          * Delete_repo_collaborator_user
          *
+         * DElete user as a collaborator
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $username
-         * @return
+         * @param string $username
+         * @return array
          */
         public function delete_repo_collaborator_user($owner, $repo, $username) {
             $args = array( );
@@ -2411,6 +2444,9 @@ if (!class_exists('GithubAPI')) {
         // Repo Comments
         /**
          * Get_repo_comment_commit_list
+         *
+         * Commit Comments use these custom media types. You can read more about the use of media types in the API here.
+				 * Comments are ordered by ascending ID.
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2423,9 +2459,11 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_repo_single_commit_comment_list
          *
+         * List comments for a single comment
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $ref
+         * @param string $ref
          * @return array|string
          */
         public function get_repo_single_commit_comment_list($owner, $repo, $ref) {
@@ -2435,10 +2473,12 @@ if (!class_exists('GithubAPI')) {
         /**
          * Create_repo_comment_commit
          *
+         * Create a commit comment
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $sha
-         * @return
+         * @param string $sha
+         * @return array
          */
         public function create_repo_comment_commit($owner, $repo, $sha) {
             $args = array( );
@@ -2447,6 +2487,8 @@ if (!class_exists('GithubAPI')) {
 
         /**
          * Get_repo_single_commit_comment
+         *
+         * Get a single commit comment
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2460,6 +2502,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Update_repo_comment_commit
          *
+         * Update a commit comment
+         *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
          * @param int    $id
@@ -2472,6 +2516,8 @@ if (!class_exists('GithubAPI')) {
 
         /**
          * Delete_repo_comment_commit
+         *
+         * Delete a commit comment
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
@@ -2500,7 +2546,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $sha
+         * @param string $sha
          * @return array|string
          */
         public function get_repo_single_commit($owner, $repo, $sha) {
@@ -2512,7 +2558,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $ref
+         * @param string $ref
          * @return array|string
          */
         public function get_repo_sha_1_commit_reference($owner, $repo, $ref) {
@@ -2524,8 +2570,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $base
-         * @param string  $head
+         * @param string $base
+         * @param string $head
          * @return array|string
          */
         public function get_two_commits($owner, $repo, $base, $head) {
@@ -2537,7 +2583,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $sha
+         * @param string $sha
          * @return array|string
          */
         public function get_repo_verification_signature_commit($owner, $repo, $sha) {
@@ -2549,7 +2595,7 @@ if (!class_exists('GithubAPI')) {
          * Get_repo_metrics_profile_commun
          *
          * @param string $owner The owner of the repository
-         * @param string  $name
+         * @param string $name
          * @return array|string
          */
         public function get_repo_metrics_profile_commun($owner, $name) {
@@ -2573,7 +2619,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $path
+         * @param string $path
          * @return array|string
          */
         public function get_repo_contents($owner, $repo, $path) {
@@ -2585,7 +2631,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $path
+         * @param string $path
          * @return
          */
         public function create_repo_file($owner, $repo, $path) {
@@ -2598,7 +2644,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $path
+         * @param string $path
          * @return
          */
         public function update_repo_file($owner, $repo, $path) {
@@ -2613,7 +2659,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $path
+         * @param string $path
          * @return
          */
         public function delete_repo_file($owner, $repo, $path) {
@@ -2631,8 +2677,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $archive_format
-         * @param string  $ref
+         * @param string $archive_format
+         * @param string $ref
          * @return array|string
          */
         public function get_repo_archive_link($owner, $repo, $archive_format, $ref) {
@@ -2660,7 +2706,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_deploy_key($owner, $repo, $id) {
@@ -2690,7 +2736,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function edit_repo_deploy_key($owner, $repo, $id) {
@@ -2703,7 +2749,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function delete_repo_deploy_key($owner, $repo, $id) {
@@ -2736,7 +2782,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $deployment_id
+         * @param string $deployment_id
          * @return array|string
          */
         public function get_single_repo_deploy($owner, $repo, $deployment_id) {
@@ -2772,7 +2818,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_deploy_status_list($owner, $repo, $id) {
@@ -2789,8 +2835,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
-         * @param string  $status_id
+         * @param int    $id
+         * @param string $status_id
          * @return array|string
          */
         public function get_repo_single_deploy_status($owner, $repo, $id, $status_id) {
@@ -2808,12 +2854,11 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function create_repo_deploy_status($owner, $repo, $id) {
             $args = array(
-                'method' => 'POST',
                 'state' => '',
                 'target_url' => '',
                 'log_url' => '',
@@ -2821,7 +2866,7 @@ if (!class_exists('GithubAPI')) {
                 'environment_url' => '',
                 'auto_inactive' => 'true'
             );
-            return $this->build_request($args)->fetch('repos/' . $owner . '/' . $repo . '/deployments/' . $id . '/statuses');
+            return $this->build_request('repos/' . $owner . '/' . $repo . '/deployments/' . $id . '/statuses', $args, 'POST')->fetch();
         }
 
         // Repo Downloads
@@ -2841,7 +2886,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_single_repo_download($owner, $repo, $id) {
@@ -2853,7 +2898,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function delete_repo_download($owner, $repo, $id) {
@@ -2910,7 +2955,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $invitation_id
+         * @param string $invitation_id
          * @return
          */
         public function delete_repo_invite($owner, $repo, $invitation_id) {
@@ -2925,7 +2970,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $invitation_id
+         * @param string $invitation_id
          * @return
          */
         public function update_repo_invite($owner, $repo, $invitation_id) {
@@ -3042,7 +3087,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_specific_page_build_list($owner, $repo, $id) {
@@ -3066,7 +3111,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_single_release($owner, $repo, $id) {
@@ -3089,7 +3134,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $tag
+         * @param string $tag
          * @return array|string
          */
         public function get_repo_release_tag_name($owner, $repo, $tag) {
@@ -3121,7 +3166,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function edit_repo_release($owner, $repo, $id) {
@@ -3142,7 +3187,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function delete_repo_release($owner, $repo, $id) {
@@ -3157,7 +3202,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_release_asset_list($owner, $repo, $id) {
@@ -3168,7 +3213,7 @@ if (!class_exists('GithubAPI')) {
          * Update_repo_release_as
          *
          * @param string $owner The owner of the repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function update_repo_release_asset($owner, $id) {
@@ -3186,7 +3231,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_release_single_asset($owner, $repo, $id) {
@@ -3198,7 +3243,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function edit_repo_release_asset($owner, $repo, $id) {
@@ -3215,7 +3260,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function delete_repo_release_asset($owner, $repo, $id) {
@@ -3287,7 +3332,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $sha
+         * @param string $sha
          * @return
          */
         public function create_repo_status($owner, $repo, $sha) {
@@ -3306,7 +3351,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $ref
+         * @param string $ref
          * @return array|string
          */
         public function get_repo_specific_ref_status_list($owner, $repo, $ref) {
@@ -3321,7 +3366,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $ref
+         * @param string $ref
          * @return array|string
          */
         public function get_repo_specific_ref_combined_status($owner, $repo, $ref) {
@@ -3399,7 +3444,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return array|string
          */
         public function get_repo_single_hook($owner, $repo, $id) {
@@ -3429,7 +3474,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function edit_repo_hook($owner, $repo, $id) {
@@ -3449,7 +3494,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function test_repo_hook($owner, $repo, $id) {
@@ -3464,7 +3509,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function ping_repo_hook($owner, $repo, $id) {
@@ -3479,7 +3524,7 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param int $id
+         * @param int    $id
          * @return
          */
         public function delete_repo_hook($owner, $repo, $id) {
@@ -3603,8 +3648,8 @@ if (!class_exists('GithubAPI')) {
          *
          * @param string $owner The owner of the repository
          * @param string $repo  The specified repository
-         * @param string  $state
-         * @param string  $keyword
+         * @param string $state
+         * @param string $keyword
          * @return array|string
          */
         public function get_legacy_search_issues($owner, $repo, $state, $keyword) {
@@ -3618,7 +3663,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_legacy_search_repo
          *
-         * @param string  $keyword
+         * @param string $keyword
          * @return array|string
          */
         public function get_legacy_search_repo($keyword) {
@@ -3635,7 +3680,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_legacy_search_user
          *
-         * @param string  $keyword
+         * @param string $keyword
          * @return array|string
          */
         public function get_legacy_search_user($keyword) {
@@ -3651,7 +3696,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_legacy_search_email
          *
-         * @param string  $email
+         * @param string $email
          * @return array|string
          */
         public function get_legacy_search_email($email) {
@@ -3665,8 +3710,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_scim_supported_user_attributes
          *
-         * @param string  $org
-         * @param int $id
+         * @param string $org
+         * @param int    $id
          * @return array|string
          */
         public function get_scim_supported_user_attributes($org, $id) {
@@ -3685,7 +3730,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_scim_provisioned_identities_list
          *
-         * @param string  $organization
+         * @param string $organization
          * @return array|string
          */
         public function get_scim_provisioned_identities_list($org) {
@@ -3700,8 +3745,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_scim_single_user_provision_details
          *
-         * @param string  $org
-         * @param int $id
+         * @param string $org
+         * @param int    $id
          * @return array|string
          */
         public function get_scim_single_user_provision_details($org, $id) {
@@ -3711,7 +3756,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Send_scim_user_invite_provision
          *
-         * @param string  $org
+         * @param string $org
          * @return
          */
         public function send_scim_user_invite_provision($org) {
@@ -3724,8 +3769,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Update_scim_memembership_org_provision
          *
-         * @param string  $org
-         * @param int $id
+         * @param string $org
+         * @param int    $id
          * @return string
          */
         public function update_scim_memembership_org_provision($org, $id) {
@@ -3735,8 +3780,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Update_scim_user_attribute
          *
-         * @param string  $org
-         * @param int $id
+         * @param string $org
+         * @param int    $id
          * @return
          */
         public function update_scim_user_attribute($org, $id) {
@@ -3749,8 +3794,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Delete_scim_org_user
          *
-         * @param string  $org
-         * @param int $id
+         * @param string $org
+         * @param int    $id
          * @return
          */
         public function delete_scim_org_user($org, $id) {
@@ -3764,7 +3809,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_single_user
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_single_user($username) {
@@ -3870,7 +3915,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_follower_list
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_user_follower_list($username) {
@@ -3880,7 +3925,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_follow_user_list
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_user_follow_user_list($username) {
@@ -3890,7 +3935,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_follow_personal_user
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_user_follow_personal_user($username) {
@@ -3900,8 +3945,8 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_follows_user
          *
-         * @param string  $username
-         * @param string  $target_user
+         * @param string $username
+         * @param string $target_user
          * @return array|string
          */
         public function get_user_follows_user($username, $target_user) {
@@ -3911,7 +3956,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * User_follow
          *
-         * @param string  $username
+         * @param string $username
          * @return
          */
         public function user_follow($username) {
@@ -3924,7 +3969,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Delete_user_follow
          *
-         * @param string  $username
+         * @param string $username
          * @return
          */
         public function delete_user_follow($username) {
@@ -3935,7 +3980,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_public_key_list
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_user_public_key_list($username) {
@@ -3998,7 +4043,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_user_gpg_key_list
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_user_gpg_key_list($username) {
@@ -4062,7 +4107,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_personal_user_block_user
          *
-         * @param string  $username
+         * @param string $username
          * @return array|string
          */
         public function get_personal_user_block_user($username) {
@@ -4072,7 +4117,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Block_user
          *
-         * @param string  $username
+         * @param string $username
          * @return
          */
         public function block_user($username) {
@@ -4085,7 +4130,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Unblock_user
          *
-         * @param string  $username
+         * @param string $username
          * @return
          */
         public function unblock_user($username) {
@@ -4099,7 +4144,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Get_enterprise_admin_stats
          *
-         * @param string  $type
+         * @param string $type
          * @return array|string
          */
         public function get_enterprise_admin_stats($type) {
@@ -4123,7 +4168,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Update_enterprise_ldap_user_mapping
          *
-         * @param string  $usernmae
+         * @param string $usernmae
          * @return
          */
         public function update_enterprise_ldap_user_mapping($usernmae) {
@@ -4136,7 +4181,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Sync_enterprise_ldap_user_mapping
          *
-         * @param string  $usernmae
+         * @param string $usernmae
          * @return
          */
         public function sync_enterprise_ldap_user_mapping($usernmae) {
@@ -4149,7 +4194,7 @@ if (!class_exists('GithubAPI')) {
         /**
          * Update_enterprise_ldap_team_mapping
          *
-         * @param string  $team_id
+         * @param string $team_id
          * @return
          */
         public function patch_enterprise_ldap_team_mapping($team_id) {
