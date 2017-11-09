@@ -20,7 +20,7 @@
 /* Exit if accessed directly */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if ( ! class_exists( 'GithubAPI' ) {
+if ( ! class_exists( 'GithubAPI' ) ){
 
 	/**
  	* Github API Class.
@@ -81,10 +81,6 @@ if ( ! class_exists( 'GithubAPI' ) {
 		}
 
 		public function get_users_public_events() {
-
-		}
-
-		public function get_organization_events() {
 
 		}
 
@@ -238,7 +234,7 @@ if ( ! class_exists( 'GithubAPI' ) {
 				'application/vnd.github.VERSION.text+json',
 				'application/vnd.github.VERSION.html+json',
 				'application/vnd.github.VERSION.full+json'
-			)
+			);
 
 		}
 
