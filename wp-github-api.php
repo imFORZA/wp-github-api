@@ -3120,6 +3120,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			return $this->build_request()->fetch( 'repos/' . $owner . '/' . $repo . '/releases/' . $id );
 		}
 
+
 		/**
 		 * Get_repo_latest_release
 		 *
@@ -3901,6 +3902,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			return $this->build_request( $args )->fetch( 'user/emails' );
 		}
 
+
 		/**
 		 * Toggle_user_primary_email_visibiltiy
 		 *
@@ -4224,7 +4226,15 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		}
 		public function get_enterprise_maintenance_status() {
 		}
-		public function post_enterprise_maintence_mode() {
+
+		public function get_issues_custom_media_types() {
+
+			return array(
+				'application/vnd.github.VERSION.raw+json',
+				'application/vnd.github.VERSION.text+json',
+				'application/vnd.github.VERSION.html+json',
+				'application/vnd.github.VERSION.full+json'
+			);
 		}
 		public function get_enterprise_auth_ssh_keys() {
 		}
