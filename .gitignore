@@ -1,2 +1,5 @@
 vendor/*
-*.lock
+/node_modules/
+npm-debug.log
+gulpconf.js
+/dist/
