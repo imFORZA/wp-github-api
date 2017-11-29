@@ -73,6 +73,13 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		protected $route = '';
 
 		/**
+		 * Pagination links.
+		 *
+		 * @var string
+		 */
+		public $links;
+
+		/**
 		 * Constructor.
 		 *
 		 * @param string $api_key  API key to the account.
@@ -128,13 +135,32 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			$code = wp_remote_retrieve_response_code( $response );
 			$body = json_decode( wp_remote_retrieve_body( $response ) );
 
+      $this->set_links( $response );
+
 			$this->clear();
+
 			// Return WP_Error if request is not successful.
 			if ( ! $this->is_status_ok( $code ) ) {
 				return new WP_Error( 'response-error', sprintf( __( 'Status: %d', 'wp-untappd-api' ), $code ), $body );
 			}
 
 			return $body;
+		}
+
+		public function get_next_args(){
+			if( $this->has_next() ){
+				return wp_parse_args( wp_parse_url( $this->links['next'], PHP_URL_QUERY ) , array() );
+			}
+		}
+
+		public function has_next(){
+			$result = false;
+
+			if( isset( $this->links['next'] ) ){
+				$result = true;
+			}
+
+			return $result;
 		}
 
 		/**
@@ -164,6 +190,30 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 */
 		protected function is_status_ok( $code ) {
 			return ( 200 <= $code && 300 > $code );
+		}
+
+		protected function set_links( $response ){
+		  $this->links = array();
+
+			// Get links from response header.
+			$links = wp_remote_retrieve_header( $response, 'link' );
+
+			// Parse the string into a convenient array.
+			$links = explode( ',', $links );
+			if( ! empty( $links ) ){
+
+				foreach ( $links as $link ) {
+					$tmp =  explode( ";", $link );
+					$res = preg_match('~<(.*?)>~',$tmp[0], $match );
+
+					if( ! empty( $res ) ){
+						// Some string magic to set array key. Changes 'rel="next"' => 'next'.
+						$key = str_replace( array( 'rel=', '"' ),'',trim($tmp[1]));
+						$this->links[$key] = $match[1];
+
+					}
+				}
+			}
 		}
 
 		/**
@@ -199,12 +249,10 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 *
 		 * @access public
 		 * @param  string  $org  Name of org.
-		 * @param  string  $type Valid values: all, public, private, forks, sources, member.
+		 * @param  string  $args Aadditional query args.
 		 * @return array
 		 */
-		public function get_org_repos( $org, $type = 'all' ) {
-			$args['type'] = $type;
-
+		public function get_org_repos( $org, $args = array() ) {
 			return $this->build_request( "orgs/$org/repos", $args )->fetch();
 		}
 
