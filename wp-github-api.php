@@ -170,7 +170,8 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			// Set request headers.
 			$this->args['headers'] = array(
 				'Content-Type' => 'application/json',
-				'Accept' => 'application/vnd.github.v3+json',
+				//'Accept' => 'application/vnd.github.v3+json',
+				'Accept' => 'application/vnd.github.mercy-preview+json',
 				'Authorization' => 'token ' . trim( static::$api_token ),
 			);
 		}
@@ -217,9 +218,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		}
 
 		/**
-		 * Get Menu Section Items.
-		 *
-		 * (Aka: Get me all the beers )
+		 * Get all orgs
 		 *
 		 * @access public
 		 * @param  int    $section_id ID of menu section.
@@ -230,9 +229,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		}
 
 		/**
-		 * Get Menu Section Items.
-		 *
-		 * (Aka: Get me all the beers )
+		 * Get org.
 		 *
 		 * @access public
 		 * @param  int    $section_id ID of menu section.
@@ -243,9 +240,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		}
 
 		/**
-		 * Get Menu Section Items.
-		 *
-		 * (Aka: Get me all the beers )
+		 * Get org repos.
 		 *
 		 * @access public
 		 * @param  string  $org  Name of org.
