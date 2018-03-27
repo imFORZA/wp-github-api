@@ -147,12 +147,24 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			return $body;
 		}
 
+		/**
+		 * get_next_args function.
+		 *
+		 * @access public
+		 * @return void
+		 */
 		public function get_next_args(){
 			if( $this->has_next() ){
 				return wp_parse_args( wp_parse_url( $this->links['next'], PHP_URL_QUERY ) , array() );
 			}
 		}
 
+		/**
+		 * has_next function.
+		 *
+		 * @access public
+		 * @return void
+		 */
 		public function has_next(){
 			$result = false;
 
@@ -193,6 +205,13 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			return ( 200 <= $code && 300 > $code );
 		}
 
+		/**
+		 * set_links function.
+		 *
+		 * @access protected
+		 * @param mixed $response
+		 * @return void
+		 */
 		protected function set_links( $response ){
 		  $this->links = array();
 
@@ -249,6 +268,52 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 */
 		public function get_org_repos( $org, $args = array() ) {
 			return $this->build_request( "orgs/$org/repos", $args )->fetch();
+		}
+
+
+		public function get_repo_commits( $owner, $repo, $args = array() ) {
+			return $this->build_request( "repos/$owner/$repo/commits", $args )->fetch();
+		}
+
+		/**
+		 * get_repo_branches function.
+		 *
+		 * @access public
+		 * @param mixed $owner
+		 * @param mixed $repo
+		 * @param array $args (default: array())
+		 * @return void
+		 */
+		public function get_repo_branches( $owner, $repo, $args = array() ) {
+			return $this->build_request( "repos/$owner/$repo/branches", $args )->fetch();
+		}
+		
+		/**
+		 * get_repo_contents function.
+		 * 
+		 * @access public
+		 * @param mixed $owner
+		 * @param mixed $repo
+		 * @param string $path (default: '')
+		 * @param array $args (default: array())
+		 * @return void
+		 */
+		public function get_repo_contents( $owner, $repo, $path = '', $args = array() ) {
+			return $this->build_request( "repos/$owner/$repo/contents/$path", $args )->fetch();
+		}
+		
+		/**
+		 * get_git_tree function.
+		 * 
+		 * @access public
+		 * @param mixed $owner
+		 * @param mixed $repo
+		 * @param mixed $sha
+		 * @param array $args (default: array())
+		 * @return void
+		 */
+		public function get_git_tree( $owner, $repo, $sha, $args = array() ) {
+		return $this->build_request( "repos/$owner/$repo/git/tress/$sha", $args )->fetch();
 		}
 
 	} // End Class.
