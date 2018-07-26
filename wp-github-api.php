@@ -275,6 +275,10 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 			return $this->build_request( "repos/$owner/$repo/commits", $args )->fetch();
 		}
 
+		public function delete_repo( $owner, $repo ){
+			return $this->build_request( "repos/$owner/$repo", array(), 'DELETE' )->fetch();
+		}
+
 		/**
 		 * get_repo_branches function.
 		 *
@@ -287,10 +291,10 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_repo_branches( $owner, $repo, $args = array() ) {
 			return $this->build_request( "repos/$owner/$repo/branches", $args )->fetch();
 		}
-		
+
 		/**
 		 * get_repo_contents function.
-		 * 
+		 *
 		 * @access public
 		 * @param mixed $owner
 		 * @param mixed $repo
@@ -301,10 +305,10 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		public function get_repo_contents( $owner, $repo, $path = '', $args = array() ) {
 			return $this->build_request( "repos/$owner/$repo/contents/$path", $args )->fetch();
 		}
-		
+
 		/**
 		 * get_git_tree function.
-		 * 
+		 *
 		 * @access public
 		 * @param mixed $owner
 		 * @param mixed $repo
@@ -313,7 +317,7 @@ if ( ! class_exists( 'GithubAPI' ) ) {
 		 * @return void
 		 */
 		public function get_git_tree( $owner, $repo, $sha, $args = array() ) {
-		return $this->build_request( "repos/$owner/$repo/git/tress/$sha", $args )->fetch();
+			return $this->build_request( "repos/$owner/$repo/git/tress/$sha", $args )->fetch();
 		}
 
 	} // End Class.
